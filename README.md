@@ -1,13 +1,6 @@
 # Sentiment Analysis Chat App
 
 ### Set-Up Instructions
-Requirements:
-- Python
-- Node.js 
-- Docker
-- Rasa
-- Transformers
-- Torch
   
 ```bash
 git clone <repo-url>
