@@ -1,0 +1,49 @@
+print("Checking MongoDB version...");
+print("MongoDB version: " + db.version());
+
+print("Initializing database...");
+conn = new Mongo();
+db = conn.getDB("cpen322-messenger");
+db.dropDatabase();
+imgHost = '/';
+
+print("Inserting chatrooms...");
+result = db.chatrooms.insertMany([
+  {
+    _id: 'room-1',
+    name: 'Nicolas Cage Fans',
+    image: imgHost + 'assets/everyone-icon.png'
+  },
+  {
+    _id: 'room-2',
+    name: 'Amazon Prime LOTR SEASON2',
+    image: imgHost + 'assets/bibimbap.jpg'
+  },
+  {
+    _id: 'room-3',
+    name: 'CANUCKS VERSUS OILERS GAME 6',
+    image: imgHost + 'assets/minecraft.jpg'
+  },
+  {
+    _id: 'room-4',
+    name: 'Zack Synder Needs to Chill with the SlowMos',
+    image: imgHost + 'assets/minecraft.jpg'
+  },
+]);
+
+printjson(result);
+
+print("Inserting conversations...");
+result = db.conversations.insertMany([
+  {
+    room_id: 'room-1',
+    timestamp: 1596233125227,
+    messages: [
+      { username: 'Alice', text: 'Hello!' },
+      { username: 'Bob', text: 'Hi!' },
+      { username: 'Charlie', text: "What's up?" }
+    ]
+  }
+]);
+
+printjson(result);

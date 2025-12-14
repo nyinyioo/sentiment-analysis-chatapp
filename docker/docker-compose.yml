@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: iyn_nimda
+      MONGO_INITDB_ROOT_PASSWORD: Summertime_Revival_Nyiman_0011
+    volumes:
+      - ./initdb.mongo:/docker-entrypoint-initdb.d/initdb.mongo
+      - ./initUsers.mongo:/docker-entrypoint-initdb.d/initUsers.mongo
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

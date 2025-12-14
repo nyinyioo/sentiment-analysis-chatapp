@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="/css/chatroom_styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Demo User <%= room._id %></h1>
+            <a href="backend\app\routes\index.js" class="exit-button" title="Exit Chat" data-room-id="<%= room._id %>">Exit</a>
+        </div>
+        
+        <div id="message-list" class="message-list"></div>
+
+        <div class="chat-input">
+            <textarea id="message-input" placeholder="Type your message..."></textarea>
+            <button id="send-message">Send</button>
+        </div>
+    </div>
+        <footer>
+        <div class="footer-bottom">
+            &copy; 2024 NYI 
+        </div>
+    </footer>
+    <!-- <script src="/js/script.js"></script> -->
+    <!-- <script nonce="<%= nonce %>" src="/js/script.js"></script> -->
+    <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
+    <script type="module" nonce="<%= nonce %>">
+
+    import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+    function renderMarkdownMessage(msg, color) {
+        const container = document.getElementById("message-list");
+        const html = marked.parse(msg.text);
+
+        const msgElem = document.createElement("div");
+        msgElem.className = `message ${msg.isBot ? "bot-message" : "my-message"}`;
+        msgElem.style.backgroundColor = color;
+        msgElem.innerHTML =
+        `<span class="message-user">${msg.isBot ? msg.username : roomId}:</span>` +
+        `<span class="message-text">${html}</span>`;
+
+        container.appendChild(msgElem);
+        container.scrollTop = container.scrollHeight;
+    }
+
+        function getSentimentColor(label, score) {
+            let red = 0, green = 0, blue = 0;
+            switch (label) {
+                case 'LABEL_0': 
+                    red = 255; 
+                    green = 255 * (1 - score); 
+                    blue = 255 * (1 - score); 
+                    break;
+                case 'LABEL_1': 
+                    red = 255 * score + 128 * (1 - score); 
+                    green = 255 * score + 128 * (1 - score); 
+                    blue = 255 * score + 128 * (1 - score); 
+                    break;
+                case 'LABEL_2': 
+                    red = 255 * (1 - score);
+                    green = 255; 
+                    blue = 255 * (1 - score); 
+                    break;
+                default:
+                    red = 200; 
+                    green = 200;
+                    blue = 200; 
+            }
+            red = Math.floor(red);
+            green = Math.floor(green);
+            blue = Math.floor(blue);
+    
+            return `rgb(${red}, ${green}, ${blue})`;
+        }
+    
+    const roomId = "<%= room._id %>";
+    const socket = new WebSocket("ws://localhost:8000");
+    
+    socket.onopen = () => {
+    console.log("Connected to the chatroom:", roomId);
+
+    // Initial Greeting Message
+    const greetingMessage = {
+        username: "Nav-Mini", // Bot username
+        text: "How are you doing today?",
+        roomId: roomId,
+        isBot: true,
+        sentiment: { label: "neutral", score: 0 } // Default sentiment
+    };
+
+    //console.log("[DEBUG] Sending bot greeting message:", greetingMessage);
+    //socket.send(JSON.stringify(greetingMessage));
+
+    // Append the bot's greeting (for immediate UI update)
+    const messageList = document.getElementById("message-list");
+    const messageElem = document.createElement("div");
+    messageElem.className = "message bot-message";
+    messageElem.style.backgroundColor = getSentimentColor(greetingMessage.sentiment.label, greetingMessage.sentiment.score);
+    messageElem.innerHTML =
+    `<span class="message-user">${greetingMessage.username}:</span>` +
+    `<span class="message-text">${greetingMessage.text}</span>`;
+    messageList.appendChild(messageElem);
+    messageList.scrollTop = messageList.scrollHeight; 
+};
+
+socket.onmessage = (event) => {
+    console.log("[DEBUG] Raw data received from WebSocket:", event.data);
+    try {
+        const message = JSON.parse(event.data);
+        console.log("[DEBUG] Parsed message:", message);
+
+        const sentimentLabel = message.sentiment?.label || "neutral";
+        const sentimentScore = message.sentiment?.score || 0;
+        const color = getSentimentColor(sentimentLabel, sentimentScore);
+        console.log("[DEBUG] Assigned color:", color);
+
+        const messageType = message.isBot ? "bot-message" : "my-message";
+        const messageList = document.getElementById("message-list");
+        const messageElem = document.createElement("div");
+
+        messageElem.className = `message ${messageType}`;
+        messageElem.style.backgroundColor = color;
+
+        const displayName = message.isBot ? message.username : roomId;
+
+        //use function to render markdown
+        renderMarkdownMessage(message, color);
+
+    } catch (error) {
+        console.error("[ERROR] Failed to process incoming message:", error);
+    }
+};
+
+        document.getElementById("send-message").addEventListener("click", () => {
+                    const input = document.getElementById("message-input");
+                    const text = input.value;
+                    if (text) {
+                        console.log("Sending message:", text);
+                        socket.send(JSON.stringify({ roomId, text }));
+                        input.value = "";
+                    }
+                });
+        document.getElementById("message-input").addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) { 
+                event.preventDefault(); 
+                const input = document.getElementById("message-input");
+                const text = input.value;
+                if (text) {
+                    console.log("Sending message:", text);
+                    socket.send(JSON.stringify({ roomId, text }));
+                    input.value = "";
+                }
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const exitButton = document.querySelector('.exit-button');
+            if (exitButton) {
+                exitButton.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const roomId = exitButton.getAttribute('data-room-id'); 
+    
+                    try {
+                        const response = await fetch(`/lobby/chat/${roomId}`, { method: 'DELETE' });
+                        if (response.ok) {
+                            console.log(`[DEBUG] Room ${roomId} deleted successfully.`);
+                            window.location.href = "/chatapp"; 
+                        } else {
+                            console.error(`[ERROR] Failed to delete room ${roomId}`);
+                        }
+                    } catch (error) {
+                        console.error(`[ERROR] ${error.message}`);
+                    }
+                });
+            } else {
+                console.error('Exit button not found on the page.');
+            }
+        });
+    </script>
+</body>
+</html>

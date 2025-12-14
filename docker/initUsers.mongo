@@ -1,0 +1,25 @@
+print("Initializing users...");
+conn = new Mongo();
+db = conn.getDB("cpen322-messenger");
+
+print("Inserting users...");
+result = db.users.insertMany([
+  {
+    username: 'alice',
+    password: '1htYvJoddV8mLxq3h7C26/RH2NPMeTDxHIxWn49M/G0wxqh/7Y3cM+kB1Wdjr4I='
+  },
+  {
+    username: 'bob',
+    password: 'MIYB5u3dFYipaBtCYd9fyhhanQkuW4RkoRTUDLYtwd/IjQvYBgMHL+eoZi3Rzhw='
+  },
+  {
+    username: 'nyi',
+    password: 'MIYB5u3dFYipaBtCYd9fyhhanQkuW4RkoRTUDLYtwd/IjQvYBgMHL+eoZi3Rzhw='
+  },
+  {
+    username: 'nyi1',
+    password: 'MIYB5u3dFYipaBtCYd9fyhhanQkuW4RkoRTUDLYtwd/IjQvYBgMHL+eoZi3Rzhw='
+  },
+]);
+
+printjson(result);

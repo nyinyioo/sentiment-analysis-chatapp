@@ -1,1 +1,9 @@
-##requirements##
+rasa==3.6.20
+rasa-sdk==3.6.2
+numpy<2.0
+scikit-learn
+pandas
+python-dotenv
+requests
+transformers
+torch

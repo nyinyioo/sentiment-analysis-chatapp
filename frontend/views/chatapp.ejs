@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Chat App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/chatapp_styles.css"> 
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8H8YMLNYL6"></script>
+    <script nonce="<%= nonce %>">
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-8H8YMLNYL6');
+    </script>
+</head>
+<body>
+    <!-- <div id="overlay" class="overlay" onclick="closeMenu()"></div> -->
+    <div id="app">
+        <div class="content-container">
+            <h1>Sentiment Analysis Chat App</h1>
+            <div class="media-container">
+                <div class="images-container">
+                    <img src="https://nyibucket.s3.amazonaws.com/demo_img.jpg" alt="Screenshot of the Chat App">
+                </div>
+                <div class="video-container">
+                    <video controls>
+                        <source src="https://nyibucket.s3.amazonaws.com/demo_vid.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <a href="/login?redirect=/chat">Click Here To Try it Out!</a>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-bottom">
+            &copy; 2024 NYI 
+        </div>
+    </footer>
+    <!-- <script src="/js/script.js"></script> -->
+    <!-- <script nonce="<%= nonce %>" src="/js/script.js"></script> -->
+    <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+//helper functions given in the assignment-----------------------------------------------------------------
+// Removes the contents of the given DOM element (equivalent to elem.innerHTML = '' but faster)
+function emptyDOM (elem){
+    while (elem.firstChild) elem.removeChild(elem.firstChild);
+}
+
+// Creates a DOM element from the given HTML string
+function createDOM (htmlString){
+    let template = document.createElement('template');
+    template.innerHTML = htmlString.trim();
+    return template.content.firstChild;
+}
+//----------------------------------------------------------------------------------------------------------
+
+//another helper function to get Room Num (might come in hand )
+/* function getRoomNum(hash){
+    let rmID = window.location.hash;
+    const roomNum = hash.split('-')[1];
+    return roomNum;
+} */
+
+
+//global variable profile
+const profile = {
+    username: "Rudy"
+};
+
+//create classes named Lobbyview, ChatView, and ProfileView
+class LobbyView{
+    //will create the DOM inside constructor and assign to elem
+    constructor(lobby){
+        this.lobby = lobby;
+        this.elem = createDOM(`<div class = "content">
+        <ul class = "room-list">
+          <li><a href="#/chat/room-1">Chat Room 1</a></li>
+          <li><a href="#/chat/room-2">Chat Room 2</a></li>
+          <li><a href="#/chat/room-3">Chat Room 3</a></li>
+        </ul>
+        <br>
+        <br>
+        <div class="page-control">
+          <input type="text" placeholder="Room Title">
+          <button>Create Room</button>
+        </div>
+        </div>`);
+
+        //store references to descendents elems for lobby DOM
+        this.listElem = this.elem.querySelector('.room-list');
+        this.inputElem = this.elem.querySelector('input[type="text"]');
+        this.buttonElem = this.elem.querySelector('button');
+
+        this.redrawList();
+        
+        var roomNum = 4;    
+        this.buttonElem.addEventListener('click', () => {
+            roomNum++;
+            const roomName = this.inputElem.value;
+            this.lobby.addRoom(roomNum, roomName);
+            this.inputElem.value = ''; // Clear the text value
+          });
+
+        this.lobby.onNewRoom = (room) => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = "<a href=#/chat/room-" + room.id + ">"+ room.name +"</a>";
+            this.listElem.appendChild(listItem);
+        };
+
+    }
+
+    redrawList() {
+        this.listElem.innerHTML = '';
+
+        for (const roomId in this.lobby.rooms) {
+            const room = this.lobby.rooms[roomId];
+            const listItem = document.createElement('li');
+            listItem.innerHTML = "<a href=#/chat/room-" + roomId + ">"+room.name+"</a>";
+            this.listElem.appendChild(listItem);
+          }
+    }
+}
+class ChatView{
+    //will create the DOM inside constructor and assign to elem
+    constructor(){ 
+        this.elem = createDOM(`<div class = "content">
+        <h4 class = "room-name">CHAT ROOM</h4>
+        <div class = "message-list">
+            <!-- Other user Message Box -->
+            <div class="message">
+                <span class = "message-user">Prof:</span>
+                <span class = "message-text"></span>
+            </div>
+            <!-- Current End-User Message Box -->
+            <div class="my-message">
+                <span class = "message-user">Student:</span>
+                <span class = "message-text">Hi</span>
+            </div>                    
+        </div>
+        <br>
+        <br>
+        <div class="page-control">
+            <textarea placeholder="message ..."></textarea>
+            <button>Send</button>
+        </div>    
+        </div>`);
+
+
+
+   
+
+        //store references to descendents elems for chat DOM
+        this.titleElem = this.elem.querySelector('.room-name');
+        this.chatElem = this.elem.querySelector('.message-list');
+        this.inputElem = this.elem.querySelector('textarea');
+        this.buttonElem = this.elem.querySelector('button');
+
+        this.room = null;
+
+        this.buttonElem.addEventListener('click', () => {
+            this.sendMessage();
+        });
+
+        this.inputElem.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                this.sendMessage();
+            }
+        });            
+        }
+
+        setRoom(room) {
+            this.room = room;
+            this.titleElem.textContent = this.room.name;
+            this.chatElem.innerHTML = '';
+            
+            console.log(this.room.messages);
+            console.log(this.chatElem);
+
+            for (let i = 0; i < this.room.messages.length; i++) {
+                let message = this.room.messages[i];
+                if (message.username == profile.username) {
+                    const messageItem = document.createElement('div');
+                    messageItem.classList.add('my-message');
+                    messageItem.textContent = `${profile.username}: ${message.text}`;
+                    this.chatElem.appendChild(messageItem);
+                }
+                else {
+                    const messageItem = document.createElement('div');
+                    messageItem.classList.add('message');
+                    messageItem.textContent = `${message.username}: ${message.text}`;
+                    this.chatElem.appendChild(messageItem);
+                }
+            }
+
+            this.room.onNewMessage = (message) => {
+                if (message.username == profile.username) {
+                    const messageItem = document.createElement('div');
+                    messageItem.classList.add('my-message');
+                    messageItem.textContent = `${profile.username}: ${message.text}`;
+                    this.chatElem.appendChild(messageItem);
+                }
+                else {
+                    const messageItem = document.createElement('div');
+                    messageItem.classList.add('message');
+                    messageItem.textContent = `${message.username}: ${message.text}`;
+                    this.chatElem.appendChild(messageItem);
+                }
+            };
+
+        }
+
+        sendMessage() {
+            const text = this.inputElem.value;
+            if (this.room) {
+                this.room.addMessage(profile.username, text);
+                this.inputElem.value = '';
+            }
+        }
+}
+
+class ProfileView{
+    //will create the DOM inside constructor and assign to elem
+    constructor(){
+        this.elem = createDOM(`<div class = "content">
+        <div class = "profile-form">
+            <div class = "form-field">
+                <label for = "username">username:</label>
+                <input type = "text" id = "username" name = "username">
+            </div>
+
+            <div class = "form-field">
+                <label for = "password">password:</label>
+                <input type = "text" id = "password" name = "password">
+            </div>
+
+            <div class = "form-field">
+                <label for = "about">about:</label>
+                <input type = "text" id = "about" name = "about">
+            </div>
+
+        </div>
+        <div class = "page-control">
+            <button>Save</button>
+        </div>
+        </div>`);
+    }
+}
+
+class Room {
+    //constructs the room object with default values for image and messages
+    constructor(id, name, image = "assets/everyone-icon.png", messages = []) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.messages = messages;
+    }
+
+    //new method: 
+    addMessage(username, text){
+        //if given text is empty string, whitespaces ==> return
+        let message = {username, text};
+        if (text.trim().length === 0){
+            return;
+        }
+        else{
+            //create new object and push to array messages.
+            this.messages.push(message);
+        }
+
+        if (this.onNewMessage) {
+            this.onNewMessage(message);
+        }
+    }
+}
+
+class Lobby {
+    //constructs 4 rooms with id's
+    constructor() {
+        this.rooms = {
+        '1': new Room('1', 'Room 1'),
+        '2': new Room('2', 'Room 2'),
+        '3': new Room('3', 'Room 3'),
+        '4': new Room('4', 'Room 4')
+      };
+    }
+
+    //getRoom by id method
+    getRoom(roomId){
+        if (roomId in this.rooms){
+            return this.rooms[roomId];
+        } 
+        return null;
+    }
+
+    //adds a room to the room array
+    addRoom(id, name, image, messages) {
+        const newRoom = new Room(id, name, image, messages);
+        this.rooms[id] = newRoom;
+        if(this.onNewRoom) {
+            this.onNewRoom(newRoom);
+        }
+    }
+}
+
+//create func main 
+function main(){
+
+    //lobby variable in main
+    var lobby = new Lobby();
+
+    //instantiate classes inside main
+    const lobbyView = new LobbyView(lobby);
+    const chatView = new ChatView();
+    const profileView = new ProfileView();
+
+    //create a func renderRoute inside main func
+    function renderRoute(){
+        //get the path and pageview to erase/populate content
+        const hash = window.location.hash;
+        //Case1: Chat Page
+        if (hash.startsWith('#/chat/')){  
+            //clear content of page-view
+            const roomId = hash.split('-')[1];
+            const room = lobby.getRoom(roomId);
+            if (room) {
+                chatView.setRoom(room);
+            }
+            emptyDOM(document.querySelector('#page-view'));
+            //repopulate the contents of page-view from createDom
+            document.querySelector('#page-view').appendChild(chatView.elem);
+        }
+        //Case2: Profile Page
+        else if (hash == '#/profile'){
+            //empty contents of page-view
+            emptyDOM(document.querySelector('#page-view'));
+            //repopulate contents of page-view
+            document.querySelector('#page-view').appendChild(profileView.elem);
+        }
+        //Case3: Lobby Page
+        else {
+            //empty content 
+            emptyDOM(document.querySelector('#page-view'));
+            //repopulate
+            document.querySelector('#page-view').appendChild(lobbyView.elem);
+        }
+    }
+    //popstate event when URL changes
+    window.addEventListener('popstate', renderRoute);
+    //call renderRoute
+    renderRoute();
+
+    //Testing export local variables
+    cpen322.export(arguments.callee, {renderRoute, lobbyView, chatView, profileView, lobby});
+}
+
+//load event for window object
+window.addEventListener('load', main);

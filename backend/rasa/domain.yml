@@ -1,0 +1,57 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - regreeting
+  - nlu_fallback
+
+responses:
+
+  utter_regreeting:
+    - text: "Hello, How are you doing today?"
+
+  utter_goodbye:
+    - text: "Bye, Have a great day!"
+
+  utter_affirm:
+    - text: "Great! Let me know if there's anything else I can do for you."
+    - text: "I'm doing good. Thanks for asking."
+
+  utter_deny:
+    - text: "Alright, let me know how I can help instead."
+
+  utter_happy:
+    - text: "That's great to hear!"
+    - text: "Awesome! Keep up the positivity!"
+    - text: "Yay! I'm glad you're feeling good!"
+    - text: "That's wonderful! What's making you so happy?"
+    - text: "Great! Let's keep the good vibes going!"
+
+  utter_joke:
+    - text: "Glad you found it funny!"
+    - text: "Hope that cheered you up."
+
+  utter_cheer_up:
+    - text: "I'm here for you. Let me know how I can help."
+    - text: "Here's a Joke to cheer you up: Why did the man miss the funeral? He wasn't a mourning person. Let me know how I can assist you!"
+    - text: "Here's a Joke to cheer you up: Give a man a match, and he'll be warm for a few hours. Set him on fire, and he will be warm for the rest of his life. Let me know how I can assist you!"
+    - text: "Here's a Joke to cheer you up: What do you call inexpensive circumcision? A rip-off. Let me know how I can assist you!"
+    - text: "Here's a Joke to cheer you up: The guy who stole my diary just died. My thoughts are with his family. Let me know how I can assist you!"
+
+  utter_fallback:
+    - text: "I'm sorry, I didn't quite understand that. Could you rephrase?"
+    - text: "I'm sorry, I can't help you with that right now. Thank you."
+    - text: "The person who made this hasn't thought that far ahead, you have a great day. Thank you."
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+actions:
+  - action_chatgpt
+  
