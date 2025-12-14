@@ -1,5 +1,7 @@
 # Sentiment Analysis Chat App
 
+A real-time chat application with sentiment analysis built as a learning project exploring backend integration, NLP pipelines, and UI design.
+
 ### Set-Up Instructions
   
 ```bash
@@ -13,9 +15,3 @@ npm install
 cd ../..
 ./scripts/start.sh
 ```
-
-# NAV BOT
-
-### Status
- Work in progress.
-
