@@ -34,7 +34,7 @@ header, footer {
 
 
 
-    .chat-header {
+.chat-header {
     background-color: rgba(0, 0, 0, 0.9);
     color: #fff;
     padding: 1rem;
@@ -45,9 +45,9 @@ header, footer {
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 
-    }
+}
 
-    .exit-button {
+.exit-button {
     display: inline-block;
     background-color: #ff4b5c; 
     color: #fff; 
@@ -60,17 +60,17 @@ header, footer {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease;
     margin-left: auto; 
-    }
+}
 
-    .exit-button:hover {
+.exit-button:hover {
     background-color: #ff1c2d; 
     transform: scale(1.05); 
-    }
+}
 
-    .exit-button:active {
+.exit-button:active {
     background-color: #d4141f; 
     transform: scale(0.95); 
-    }
+}
 
 .message {
     display: flex;
