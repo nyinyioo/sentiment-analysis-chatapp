@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/chatroom_styles.css">
 </head>
 <body>
@@ -25,8 +26,6 @@
             &copy; 2024 NYI 
         </div>
     </footer>
-    <!-- <script src="/js/script.js"></script> -->
-    <!-- <script nonce="<%= nonce %>" src="/js/script.js"></script> -->
     <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
     <script type="module" nonce="<%= nonce %>">
 
@@ -40,13 +39,14 @@
         msgElem.className = `message ${msg.isBot ? "bot-message" : "my-message"}`;
         msgElem.style.backgroundColor = color;
         msgElem.innerHTML =
-        `<span class="message-user">${msg.isBot ? msg.username : roomId}:</span>` +
-        `<span class="message-text">${html}</span>`;
+            `<div class="message-user">${msg.isBot ? msg.username : roomId}:</div>` +
+            `<div class="message-text">${html}</div>`;
 
         container.appendChild(msgElem);
         container.scrollTop = container.scrollHeight;
     }
 
+    // Function to determine background color based on sentiment
         function getSentimentColor(label, score) {
             let red = 0, green = 0, blue = 0;
             switch (label) {
@@ -85,26 +85,15 @@
 
     // Initial Greeting Message
     const greetingMessage = {
-        username: "Nav-Mini", // Bot username
+        username: "Nav-Mini",
         text: "How are you doing today?",
         roomId: roomId,
         isBot: true,
-        sentiment: { label: "neutral", score: 0 } // Default sentiment
+        sentiment: { label: "neutral", score: 0 } 
     };
 
-    //console.log("[DEBUG] Sending bot greeting message:", greetingMessage);
-    //socket.send(JSON.stringify(greetingMessage));
-
-    // Append the bot's greeting (for immediate UI update)
-    const messageList = document.getElementById("message-list");
-    const messageElem = document.createElement("div");
-    messageElem.className = "message bot-message";
-    messageElem.style.backgroundColor = getSentimentColor(greetingMessage.sentiment.label, greetingMessage.sentiment.score);
-    messageElem.innerHTML =
-    `<span class="message-user">${greetingMessage.username}:</span>` +
-    `<span class="message-text">${greetingMessage.text}</span>`;
-    messageList.appendChild(messageElem);
-    messageList.scrollTop = messageList.scrollHeight; 
+    // Append the bot's greeting (for immediate UI update) using shared renderer
+    renderMarkdownMessage(greetingMessage, getSentimentColor(greetingMessage.sentiment.label, greetingMessage.sentiment.score));
 };
 
 socket.onmessage = (event) => {
@@ -118,16 +107,7 @@ socket.onmessage = (event) => {
         const color = getSentimentColor(sentimentLabel, sentimentScore);
         console.log("[DEBUG] Assigned color:", color);
 
-        const messageType = message.isBot ? "bot-message" : "my-message";
-        const messageList = document.getElementById("message-list");
-        const messageElem = document.createElement("div");
-
-        messageElem.className = `message ${messageType}`;
-        messageElem.style.backgroundColor = color;
-
-        const displayName = message.isBot ? message.username : roomId;
-
-        //use function to render markdown
+        // Render incoming message using the shared renderer (prevents duplicate nodes)
         renderMarkdownMessage(message, color);
 
     } catch (error) {
