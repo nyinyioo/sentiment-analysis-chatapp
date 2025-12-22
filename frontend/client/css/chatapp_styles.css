@@ -209,15 +209,14 @@
         left: 0; 
         bottom: 0; 
         z-index: 1000;
-        position: absolute;
-        bottom: -2in;
+        position: relative;
     }
     
     .footer-bottom {
         background-color: #242424;
         padding: 10px 0;
         font-family: 'Jersey 20', sans-serif;
-        font-size: 1.2em;
+        font-size: 1.4em;
         margin: 0; 
     }
     a, span.toggle-link {

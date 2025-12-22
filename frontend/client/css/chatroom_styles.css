@@ -1,29 +1,43 @@
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%; /* Ensure the body and html take the full viewport height */
+
+html {
+    scroll-behavior: smooth;
+}
+body {
+    margin: 0;
+    background-color: #1a1a1a; 
+    font-family: 'Arial', sans-serif;
+    color: #FFFFFF;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    display: flex;
+    flex-direction: column;
+    min-height: 108vh;
+    overflow-x: hidden;
 }
 
-body {
-  font-family: 'Jersey 20', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #575656;
+header, footer {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+#app {
+    flex: 1;
 }
 
 .chat-container {
-  background: url('/css/bg.jpg')no-repeat center center fixed;
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  color:rgb(255, 255, 255);
+    background: url('/assets/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    margin: 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    color: rgb(255, 255, 255);
 }
 
 
@@ -66,57 +80,77 @@ transform: scale(0.95);
 }
 
 .message {
-display: flex;
-flex-direction: column;
-padding: 10px;
-margin: 10px 0;
-border-radius: 10px;
-font-size: 1.3rem;
-word-wrap: break-word;
-transition: background-color 0.3s ease; 
-color:#242424;
-font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    padding: 4px 10px; 
+    margin: 4px 10px; 
+    border-radius: 14px;
+    font-size: 0.97rem;
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+    transition: background-color 0.2s ease, transform 0.12s ease;
+    color: #242424;
+    font-weight: 600;
+    max-width: min(72%, 720px);
+    overflow-wrap: anywhere;
+    font-size: 1.2rem;
 }
 
-.other-message {
-align-self: flex-end; 
-text-align: right;
-max-width: 80%;
+.my-message {
+    margin-left: auto;
+    margin-right: 12px;
+    background-color: #007bff;
+    color: #fff;
+    text-align: right;
 }
-
 .bot-message {
-align-self: flex-start; 
-text-align: right;
-max-width: 100%;
+    margin-right: auto;
+    margin-left: 12px;
+    text-align: left;
+    background-color: rgba(255,255,255,0.06);
 }
 
 .message-user {
+font-size: 1.1rem;
 font-weight: bold;
-margin-bottom: 4px;
+}
+
+.message .message-user,
+.my-message .message-user,
+.bot-message .message-user {
+    color: #ffffff;
+    display: block;
 }
 
 .message-text {
-font-size: 1.3rem;
-font-weight: 700;
-color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #282828;
+    margin-bottom: -0.2in;
 }
 
 .message-list {
-flex: 1;
-padding: 1rem;
-overflow-y: auto;
-background-color: #4b4b4b;
-border-radius: 8px;
+    flex: 1 1 auto;
+    padding: 1rem;
+    overflow-y: auto;
+    background-color: #4b4b4b;
+    border-radius: 8px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-start; 
 }
 
 
 .chat-input {
-display: flex;
-padding: 1rem; 
-border-top: 1px solid #ddd;
-background-color: #f4f4f9;
-align-items: center;
-gap: 1rem; 
+    display: flex;
+    padding: 1rem; 
+    border-top: 1px solid #ddd;
+    background-color: #f4f4f9;
+    align-items: center;
+    gap: 1rem; 
 }
 
 
@@ -163,40 +197,192 @@ background-color: #313131;
 
 
 footer {
-background-color: #242424;
-color: #ffffff;
-padding: 5px 0;
-text-align: center;
-width: 100%;
-margin: 0; 
-left: 0; 
-bottom: 0; 
-z-index: 1000;
+    background-color: #242424;
+    font-family: 'Jersey 20', sans-serif;
+    color: #ffffff;
+    padding: 5px 0;
+    text-align: center;
+    width: 100%;
+    margin: 0; 
+    left: 0; 
+    bottom: -2in; 
+    z-index: 1000;
+    position: sticky;
 }
 
 .footer-bottom {
-background-color: #242424;
-padding: 10px 0;
-font-family: 'Jersey 20', sans-serif;
-font-size: 1.2em;
-margin: 0; 
+    background-color: #242424;
+    padding: 10px 0;
+    font-family: inherit;
+    font-size: 1.4em;
+    margin: 0; 
 }
 
-@media screen and (min-width: 767px) {
-  #app-view {
-    width: 100%;
-    margin: auto;
-  }
-}
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-  #app-view {
-    width: 90%;
-    margin: auto;
-  }
-}
-@media screen and (min-width: 1024px) { 
-  #app-view {
-    width: 80%;
-    margin: auto;
-  }
-}
+    /* Mobile Media */
+    @media (max-width: 768px) {
+        header {
+            display: none; 
+        }
+    
+        .menu-icon {
+            display: block;
+        }
+    
+        .submenu {
+            position: static; 
+            box-shadow: none; 
+            width: 100%; 
+            height: auto; 
+            padding: 10px 0; 
+        }
+    
+        .submenu li {
+            display: block; 
+            margin: 5px 0; 
+        }
+  
+        .submenu a {
+            padding: 5px 10px; 
+            font-size: 0.7em; 
+        }
+    
+        .content-container {
+            font-size: 1.3em;
+        }
+    
+        .content-container h1 {
+            font-size: 2em;
+        }
+    
+        .content-container p {
+            font-size: 1em;
+        }
+    
+        .content-container a {
+            font-size: 1.3em;
+        }
+    
+        .media-container {
+            flex-direction: column;
+        }
+    
+        .video-container, .images-container {
+            margin: 10px 0;
+        }
+    
+        #app {
+            flex: 1;
+        }
+
+        footer {
+            position: relative;
+            bottom: 0in;
+        }
+        .footer-bottom{
+            padding: 20px 0;
+        }
+    
+        .mobile-nav-menu a, .mobile-nav-menu span.toggle-link {
+            font-size: 7vw; 
+            max-width: 70vw; 
+            word-wrap: break-word;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+    
+        .mobile-nav-menu a:focus, .mobile-nav-menu span.toggle-link:focus {
+            outline: none; 
+        }
+    
+    }
+    
+    @media (max-width: 430px) {
+        .content-container {
+            font-size: 1em;
+        }
+    
+        .content-container h1 {
+            font-size: 1.9em;
+        }
+    
+        .content-container p {
+            font-size: 0.9em;
+        }
+    
+        .content-container a {
+            font-size: 1.2em;
+        }
+    
+        .mobile-nav-menu a, .mobile-nav-menu span.toggle-link {
+            font-size: 7vw;
+            max-width: 70vw;
+            word-wrap: break-word;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        } 
+        
+        .menu-icon div {
+            width: 30px;
+            height: 3px;
+            background-color: #fff;
+            margin: 6px 0;
+            transition: 0.4s;
+        }
+        footer {
+            position: relative;
+            bottom: 0in;
+        }
+    }
+    
+    @media (max-height: 800px) {
+        .content-container {
+            font-size: 1.1em;
+        }
+    
+        .content-container h1 {
+            font-size: 1.9em;
+        }
+    
+        .content-container p {
+            font-size: 0.95em;
+        }
+    
+        .content-container a {
+            font-size: 1.2em;
+        }
+    
+        .mobile-menu {
+            overflow-y: auto;
+            padding-bottom: 60px; 
+        }
+    
+        .mobile-nav-menu a, .mobile-nav-menu span.toggle-link {
+            font-size: 5.39vw; 
+            max-width: 70vw; 
+            word-wrap: break-word; 
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        footer {
+            position: relative;
+            bottom: 0in;
+        }
+    
+        .footer-bottom {
+            padding: 10px 0;
+        }
+    
+        .menu-icon {
+            display: block;
+            bottom: 13px;
+        }
+    
+        .menu-icon div {
+            width: 30px;
+            height: 3px;
+            background-color: #fff;
+            margin: 6px 0;
+            transition: 0.4s;
+        }
+    }
+    
