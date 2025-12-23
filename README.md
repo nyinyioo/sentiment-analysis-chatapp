@@ -1,6 +1,6 @@
 # Sentiment Analysis Chat App
 
-A real-time chat application with sentiment analysis built as a learning project exploring backend integration, NLP pipelines, and UI design.
+A Progressive Web App (PWA) with real-time messaging and async sentiment UI, built as a learning project. 
 
 ### Set-Up Instructions
   
