@@ -1,6 +1,6 @@
 # Sentiment Analysis Chat App
 
-A Progressive Web App (PWA) with real-time messaging and async sentiment UI, built as a learning project. 
+A Progressive Web App (PWA) with real-time messaging and sentiment UI. 
 
 ### Set-Up Instructions
   
