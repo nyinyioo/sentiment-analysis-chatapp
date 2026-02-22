@@ -523,13 +523,11 @@ class Lobby {
 }
 
 function main() {
-    var lobby = new Lobby();
 
     // Define WebSocket URL
-    const ws = 'ws://localhost:8000';
-
-    // Create a new WebSocket instance
-    const socket = new WebSocket(ws);
+    //const ws = 'ws://localhost:8000';
+    // Connect to WebSocket via ngrok URL (same as HTTP server)
+    const socket = new WebSocket('wss://podsolic-merri-indivertibly.ngrok-free.dev/');
     var lobby = new Lobby();
     const lobbyView = new LobbyView(lobby);
     const chatView = new ChatView(socket);
