@@ -29,6 +29,7 @@ function helmetMiddleware() {
         connectSrc: [
           "'self'",
           "ws://localhost:8000",
+          "https://podsolic-merri-indivertibly.ngrok-free.dev", 
           "http://localhost:5005",
           "https://cdn.jsdelivr.net"
         ],

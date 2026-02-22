@@ -1,63 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Chat App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/chatapp_styles.css"> 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8H8YMLNYL6"></script>
-    <script nonce="<%= nonce %>">
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-8H8YMLNYL6');
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NAV-BOT — Where We Are & Where We're Going</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/chatapp_styles.css">
 </head>
 <body>
-    <!-- <div id="overlay" class="overlay" onclick="closeMenu()"></div> -->
-    <div id="app">
-        <div class="content-container">
-            <h1>Sentiment Analysis Chat App</h1>
-            <div class="media-container">
-                <div class="version1">
-                    <h2>ver1</h2>  
-                    <div class="images-container">
-                        <img src="https://nyibucket.s3.amazonaws.com/demo_img.jpg" alt="Screenshot of the Chat App">
-                    </div>
-                    <div class="video-container">
-                        <video controls>
-                            <source src="https://nyibucket.s3.amazonaws.com/demo_vid.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
-                <div class="version2">
-                    <h2>ver2</h2>  
-                    <div class="images-container">
-                        <img src="https://nyibucket.s3.amazonaws.com/demo_img.jpg" alt="Screenshot of the Chat App with Sentiment Analysis">
-                    </div>
-                    <div class="video-container">
-                        <video controls>
-                            <source src="https://nyibucket.s3.amazonaws.com/demo_vid.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                </div>
-            </div>
 
-                  <a href="/login?redirect=/chat">Click Here To Try it Out!</a>
+<div class="cursor" id="cursor"></div>
 
-            </p> 
-            </div>
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg-text">NAV</div>
 
-        </div>
+  <nav class="hero-nav">
+    <span class="logo">NAV-BOT ◦ Build Doc</span>
+    <span class="hero-tag">MVP In Progress</span>
+  </nav>
+
+  <div class="hero-content">
+    <p class="hero-eyebrow">Where we are &amp; where we're going</p>
+    <h1 class="hero-title">Teaching brains<br><em>better defaults.</em></h1>
+    <p class="hero-subtitle">A chatbot for university students — designed to detect and interrupt maladaptive coping patterns in real-time.</p>
+  </div>
+
+  <div class="hero-footer">
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      scroll to explore
     </div>
-    <footer>
-        <div class="footer-bottom">
-            &copy; 2024 NYI 
-        </div>
-    </footer>
-    <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
+  </div>
+</section>
+
+<!-- ── CURRENT STATE ── -->
+<section class="status-section">
+  <p class="section-label">Current State</p>
+  <h2 class="section-title reveal">What's already<br>built and working.</h2>
+
+  
+
+  <div class="status-grid">
+
+  <div class="status-card reveal d1">
+    <span class="status-badge badge-done">✓ Done</span>
+    <span class="status-card-icon">💬</span>
+    <h3>Core Chatbot</h3>
+    <p>Conversational interface powered by OpenAI API with Rasa handling conversation flow and intent detection. Students can freely talk, vent, and journal — no pressure to act.</p>
+    <span class="tech-tag">Node.js</span><span class="tech-tag">Rasa</span><span class="tech-tag">OpenAI API</span>
+  </div>
+
+  <div class="status-card reveal d2">
+    <span class="status-badge badge-done">✓ Done</span>
+    <span class="status-card-icon">🎨</span>
+    <h3>Sentiment Analysis + Color Bubbles</h3>
+    <p>Every message is scored in real time via HuggingFace. Message bubbles shift color dynamically based on emotional tone — the UI literally feels the conversation as it unfolds.</p>
+    <span class="tech-tag">HuggingFace</span><span class="tech-tag">Sentiment Score</span><span class="tech-tag">Dynamic UI</span>
+  </div>
+
+  <a href="/login?redirect=/chat" class="status-live-card reveal d3">
+    <div class="live-left">
+      <span class="live-eyebrow">Live Demo</span>
+      <p>Sentiment scoring + conversational routing are active.</p>
+    </div>
+
+    <div class="live-right">
+      <span class="live-cta">
+        <p>Open Chat</p>
+        <span class="live-arrow">↗</span>
+      </span>
+    </div>
+  </a>
+
+  <div class="status-card reveal d3">
+    <span class="status-badge badge-next">Building next</span>
+    <span class="status-card-icon">🧠</span>
+    <h3>CBT Pattern Detection</h3>
+    <p>A second classification layer running alongside sentiment — identifies maladaptive thought patterns like avoidance, catastrophizing, and rumination in real time.</p>
+    <span class="tech-tag">Zero-shot NLP</span><span class="tech-tag">Rasa Slots</span><span class="tech-tag">Confidence Threshold</span>
+  </div>
+
+  <div class="status-card reveal d4">
+    <span class="status-badge badge-next">Building next</span>
+    <span class="status-card-icon">🛠️</span>
+    <h3>CBT Tool Kit</h3>
+    <p>Three targeted response modes — reframing distorted thoughts, breaking overwhelming tasks into tiny steps, and grounding during emotional shutdown. Each routed to the right moment.</p>
+    <span class="tech-tag">Thought Reframe</span><span class="tech-tag">Task Breakdown</span><span class="tech-tag">Grounding</span>
+  </div>
+
+</div>
+</section>
+
+<!-- ── PIPELINE ── -->
+<section class="pipeline-section">
+  <p class="section-label">MVP Architecture</p>
+  <h2 class="section-title reveal">How every message<br>flows through NAV-BOT.</h2>
+  <p class="pipeline-intro reveal d1">
+    The new CBT layer runs in parallel with existing sentiment analysis — two classifiers, one pipeline.
+    Sentiment scores the <em>feeling</em>. Pattern detection names the <em>trap</em>.
+  </p>
+
+  <div class="pipeline">
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-ink">01</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>User sends a message</h3>
+        <p>Free venting, journaling, dumping thoughts. The base layer is always a safe space — no pressure to do anything. This is the foundation, not a feature.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-warm">02</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>Two classifiers run in parallel</h3>
+        <p>HuggingFace sentiment scoring (already live) + the new zero-shot CBT pattern classifier both fire simultaneously. No added latency from the user's perspective.</p>
+        <div class="code-snip">Promise.all([analyzeSentiment(msg), detectCBTPattern(msg)])</div>
+      </div>
+    </div>
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-teal">03</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>Confidence threshold gate</h3>
+        <p>Only patterns with ≥60% confidence trigger an interruption. Below that, the message routes normally to OpenAI. This keeps NAV-BOT from feeling like it's nagging.</p>
+        <div class="code-snip">if (score &gt;= 0.60 &amp;&amp; shouldInterrupt(session, pattern))</div>
+      </div>
+    </div>
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-violet">04</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>Rasa stores pattern state</h3>
+        <p>Detected pattern is set as a Rasa slot. Rasa manages conversation state and triggers the consent prompt naturally in the flow — no jarring handoffs.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-rose">05</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>Consent prompt — always</h3>
+        <p>NAV-BOT never assumes. It surfaces what it noticed and asks: work through it, or keep venting? The user stays in control. This is non-negotiable by design.</p>
+      </div>
+    </div>
+
+    <div class="pipeline-step" data-pipe>
+      <div class="pipeline-node">
+        <div class="node-circle nc-gold">06</div>
+        <div class="node-line"></div>
+      </div>
+      <div class="pipeline-body">
+        <h3>Route to the right CBT tool</h3>
+        <p>Based on pattern type and user's choice, Rasa fires the custom action — routing to reframe, task breakdown, or grounding mode, each with its own OpenAI system prompt.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── PATTERNS ── -->
+<section class="patterns-section">
+  <p class="section-label">What We're Listening For</p>
+  <h2 class="section-title reveal">Six patterns.<br>One pipeline.</h2>
+
+  <div class="patterns-grid">
+
+    <div class="pattern-card pc-avoidance reveal d1">
+      <span class="pdot pdot-warm"></span>
+      <h3>Avoidance</h3>
+      <p>The instinct to scroll, distract, or delay instead of starting. Sounds like "I'll do it later" or "I can't even look at this right now."</p>
+      <div class="pattern-triggers"><span>procrastination</span><span>can't start</span><span>scrolling</span></div>
+    </div>
+
+    <div class="pattern-card pc-catastrophe reveal d2">
+      <span class="pdot pdot-rose"></span>
+      <h3>Catastrophizing</h3>
+      <p>When the brain fast-forwards to the worst possible outcome. "I'm going to fail everything" — triggered by a single missed deadline.</p>
+      <div class="pattern-triggers"><span>everything</span><span>always</span><span>ruined</span></div>
+    </div>
+
+    <div class="pattern-card pc-rumination reveal d3">
+      <span class="pdot pdot-violet"></span>
+      <h3>Rumination</h3>
+      <p>Replaying the same negative thought in loops. The brain stuck on repeat, unable to move forward or let the thought go.</p>
+      <div class="pattern-triggers"><span>can't stop thinking</span><span>keeps coming back</span></div>
+    </div>
+
+    <div class="pattern-card pc-overwhelm reveal d1">
+      <span class="pdot pdot-gold"></span>
+      <h3>Overwhelm</h3>
+      <p>Cognitive overload — too many tasks, no clear entry point. The prefrontal cortex goes offline when everything feels equally urgent.</p>
+      <div class="pattern-triggers"><span>too much</span><span>don't know where to start</span></div>
+    </div>
+
+    <div class="pattern-card pc-shutdown reveal d2">
+      <span class="pdot pdot-teal"></span>
+      <h3>Shutdown</h3>
+      <p>Emotional numbness or freeze — when the nervous system pulls the plug. Flat affect, staring at screens, nothing getting done.</p>
+      <div class="pattern-triggers"><span>numb</span><span>zoned out</span><span>can't feel</span></div>
+    </div>
+
+    <div class="pattern-card pc-selfattack reveal d3">
+      <span class="pdot pdot-blue"></span>
+      <h3>Self-Attack</h3>
+      <p>The inner critic in overdrive. "I'm lazy / stupid / broken." Shame-based thinking that blocks the very action it demands.</p>
+      <div class="pattern-triggers"><span>I'm so bad at this</span><span>everyone else</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CONSENT DEMO ── -->
+<section class="consent-section">
+  <p class="section-label">The Interruption Design</p>
+  <h2 class="section-title reveal">NAV-BOT never<br>assumes. It asks.</h2>
+
+  <div class="consent-demo chat-demo-wrap reveal d2" id="chatDemo">
+
+    <div class="chat-bubble bubble-user">
+      ugh I have three assignments due and I keep opening them and closing them… I just can't
+    </div>
+
+    <div class="chat-bubble bubble-bot b1">
+      <span class="bot-label">NAV-BOT detected</span>
+      <div class="pattern-chip">avoidance + overwhelm</div>
+      <p>I'm noticing something that often comes up when people feel completely overloaded. Do you want help working through it, or would you rather just keep venting?</p>
+      <div class="consent-btns">
+        <button class="c-btn primary" onclick="handleConsent(true)">Help me work through it</button>
+        <button class="c-btn secondary" onclick="handleConsent(false)">Just keep venting</button>
+      </div>
+    </div>
+
+    <div class="chat-bubble bubble-bot b2 hidden" id="responseBubble">
+      <span class="bot-label" id="responseLabel"></span>
+      <p id="responseText"></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TOOLS ── -->
+<section class="tools-section">
+  <p class="section-label">The CBT Tool Kit</p>
+  <h2 class="section-title reveal">Right tool.<br>Right moment.</h2>
+
+  <div class="tools-grid">
+
+    <div class="tool-card t1 reveal d1">
+      <div class="tool-num">01</div>
+      <h3>Thought Reframe</h3>
+      <p>For catastrophizing, rumination, and self-attack. NAV-BOT identifies the cognitive distortion, asks one grounding question, and offers a brain-based reframe in under 3 sentences.</p>
+      <div class="tool-example">"Your brain is in survival mode, not failure mode. That's your amygdala being louder than your prefrontal cortex right now."</div>
+    </div>
+
+    <div class="tool-card t2 reveal d2">
+      <div class="tool-num">02</div>
+      <h3>Task Breakdown</h3>
+      <p>For avoidance and overwhelm. Converts a vague stressor into 3 tiny, time-bounded steps. Starts with something physical. Finishing is not required — approaching is the goal.</p>
+      <div class="tool-example">"☐ Stand up / get water (2 min)<br>☐ Open notes — no reading yet<br>☐ List topics only (5–10 min)"</div>
+    </div>
+
+    <div class="tool-card t3 reveal d3">
+      <div class="tool-num">03</div>
+      <h3>Grounding</h3>
+      <p>For shutdown and emotional numbness. One brief sensory, breathing, or body-based technique. Warm tone, zero pressure. Gets the nervous system back online before anything else.</p>
+      <div class="tool-example">"Name 5 things you can see right now. Don't rush. That's the whole thing."</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ROADMAP ── -->
+<section class="roadmap-section">
+  <p class="section-label">Build Sequence</p>
+  <h2 class="section-title reveal">Four weeks.<br>Ship the MVP.</h2>
+  <p class="roadmap-intro reveal d1">Pattern detection and the consent flow are the hardest parts — everything else follows naturally once those are solid. Starting lean, shipping fast, tuning with real session data.</p>
+
+  <div class="weeks">
+
+    <div class="week reveal d1">
+      <div class="week-label">Week 1</div>
+      <div class="week-bar wb-warm"></div>
+      <h3>Pattern Detection Only</h3>
+      <div class="week-task">Add zero-shot CBT classifier via HuggingFace in parallel with sentiment</div>
+      <div class="week-task">Log patterns to console — no interruptions yet</div>
+      <div class="week-task">Tune confidence threshold (start at 0.60)</div>
+      <div class="week-task">Watch what gets caught in real conversations</div>
+    </div>
+
+    <div class="week reveal d2">
+      <div class="week-label">Week 2</div>
+      <div class="week-bar wb-teal"></div>
+      <h3>Consent Prompt UI</h3>
+      <div class="week-task">Surface detected pattern in chat with two-button consent prompt</div>
+      <div class="week-task">Add per-session cooldown (no repeat interrupts per pattern)</div>
+      <div class="week-task">Route "Help" to a hardcoded reframe to start</div>
+      <div class="week-task">Validate the interruption feels natural, not jarring</div>
+    </div>
+
+    <div class="week reveal d3">
+      <div class="week-label">Week 3</div>
+      <div class="week-bar wb-violet"></div>
+      <h3>Rasa Slots + Routing</h3>
+      <div class="week-task">Add cbt_pattern_detected + cbt_consent_given slots to domain.yml</div>
+      <div class="week-task">Build action_route_cbt_tool custom Rasa action</div>
+      <div class="week-task">Wire all three OpenAI system prompts per tool mode</div>
+      <div class="week-task">Full pattern → consent → tool flow end-to-end</div>
+    </div>
+
+    <div class="week reveal d4">
+      <div class="week-label">Week 4</div>
+      <div class="week-bar wb-gold"></div>
+      <h3>Polish + Resilience</h3>
+      <div class="week-task">No pattern interrupts more than once per session</div>
+      <div class="week-task">Add layer 4 awareness blurbs post-tool ("here's why that helped")</div>
+      <div class="week-task">UI polish on consent prompt and pattern badge</div>
+      <div class="week-task">Begin collecting real data for future fine-tuning</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── OUTRO ── -->
+<section class="outro-section">
+  <h2 class="section-title reveal">The brain can<br><em>learn new defaults.</em></h2>
+  <p class="outro-sub reveal d2">Interrupt the pattern early enough, often enough, and gently enough — build antifragility through repetition and consistency.</p>
+  <div class="outro-pill reveal d3">NAV-BOT MVP — 2026</div>
+</section>
+
+<script nonce="<%= nonce %>">
+  // ── CURSOR ──
+  const cursor = document.getElementById('cursor');
+  let mx = -200, my = -200, cx = -200, cy = -200;
+
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  function animCursor() {
+    cx += (mx - cx) * 0.35;
+    cy += (my - cy) * 0.35;
+    cursor.style.left = cx + 'px';
+    cursor.style.top  = cy + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  document.querySelectorAll('button, .tool-card, .pattern-card, .status-card, .week').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+  });
+
+  // ── SCROLL REVEALS ──
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // ── PIPELINE STEPS ──
+  // transition-delay is handled via CSS [data-pipe]:nth-child() rules — no inline style needed
+  const pipeObs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('[data-pipe]').forEach(el => pipeObs.observe(el));
+
+  // ── CHAT DEMO AUTOPLAY ──
+  const chatDemo = document.getElementById('chatDemo');
+  const chatObs  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('playing');
+        chatObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+
+  if (chatDemo) chatObs.observe(chatDemo);
+
+  // ── CONSENT INTERACTION ──
+  function handleConsent(wantsHelp) {
+    document.querySelectorAll('.c-btn').forEach(b => {
+      b.disabled = true;
+      b.classList.add('disabled');
+    });
+
+    const rb    = document.getElementById('responseBubble');
+    const label = document.getElementById('responseLabel');
+    const text  = document.getElementById('responseText');
+
+    if (wantsHelp) {
+      label.textContent = 'NAV-BOT — task breakdown mode';
+      text.innerHTML = [
+        "Okay. Let's make this way smaller. You don't need to finish anything right now — you just need one tiny move.",
+        "<br><br>",
+        "☐ Stand up, get some water (2 min)<br>",
+        "☐ Open just one — don't read it yet<br>",
+        "☐ Write three topic words from memory",
+        "<br><br>That's it. Approaching counts."
+      ].join('');
+    } else {
+      label.textContent = 'NAV-BOT — venting mode';
+      text.innerHTML    = "Got it — no pressure at all. I'm here. Keep going.";
+    }
+
+    rb.classList.remove('hidden');
+    rb.classList.add('b2', 'response-reveal');
+    chatDemo.classList.add('playing');
+  }
+
+  // ── HERO PARALLAX ──
+  window.addEventListener('scroll', () => {
+    const bg = document.querySelector('.hero-bg-text');
+    if (bg) bg.style.transform = `translateY(${window.scrollY * 0.28}px)`;
+  }, { passive: true });
+</script>
+
 </body>
 </html>

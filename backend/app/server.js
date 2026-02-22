@@ -1,4 +1,5 @@
 require('dotenv').config();
+const http = require('http');
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
@@ -7,10 +8,9 @@ const crypto = require('crypto');
 const cors = require('cors');
 const WebSocket = require('ws');
 const app = express();
-const host = 'localhost';
-const port = 3000;
-
-
+const host = '0.0.0.0';
+const port = 3001;
+const server = http.createServer(app);
 
 const Database = require('./Database');
 const SessionManager = require('./SessionManager');
@@ -23,7 +23,17 @@ const CLIENT_PATH = path.join(FRONTEND_PATH, 'client');
 const VIEWS_PATH = path.join(FRONTEND_PATH, 'views');
 const loginAssetsPath = path.join(CLIENT_PATH, 'login_assets');
 const clientApp = CLIENT_PATH;
-const wss = new WebSocket.Server({ port: 8000 });
+const wss = new WebSocket.Server({ server });
+
+wss.on('connection', ws => {
+  console.log("WebSocket connected!");
+  ws.on('message', msg => console.log("Message:", msg));
+});
+
+app.get('/', (req, res) => res.send("Hello HTTP!"));
+
+server.listen(3001, () => console.log("Server running on port 3001"));
+
 
 // Middleware
 app.use(express.json({ limit: '10kb' }));
@@ -218,9 +228,7 @@ db.getRooms()
                 res.status(500).send('Internal Server Error');
             }
         });
-        app.listen(port, () => {
-            console.log(`${new Date()} App Started. Listening on ${host}:${port}, serving ${clientApp}`);
-        });
+        // Only use server.listen(port) to avoid duplicate listeners and WebSocket issues
     })
     .catch(err => {
         console.error('Failed to initialize messages:', err);
@@ -253,12 +261,18 @@ db.getRooms()
         }
     });
 
+
+    
 // WebSocket handling
 wss.on('connection', function connection(ws, req) {
     const cookies = parseCookies(req.headers.cookie);
     const sessionToken = cookies['cpen322-session'];
+    console.log('[WS DEBUG] Incoming cookies:', req.headers.cookie);
+    console.log('[WS DEBUG] Parsed sessionToken:', sessionToken);
+    console.log('[WS DEBUG] SessionManager.sessions keys:', Object.keys(sessionManager.sessions));
 
     if (!sessionToken || !sessionManager.sessions[sessionToken]) {
+        console.warn('[WS DEBUG] Invalid or missing session. Closing WebSocket.');
         ws.close(1008, "Session invalid");
         return;
     }

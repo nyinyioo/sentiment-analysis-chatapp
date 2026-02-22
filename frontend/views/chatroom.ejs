@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat Room</title>
     <link href="https://fonts.googleapis.com/css2?family=Jersey+20&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/chatroom_styles.css">
@@ -23,7 +23,7 @@
     </div>
         <footer>
         <div class="footer-bottom">
-            &copy; 2024 NYI 
+            &copy; 2026 NAV-BOT
         </div>
     </footer>
     <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
@@ -78,7 +78,8 @@
         }
     
     const roomId = "<%= room._id %>";
-    const socket = new WebSocket("ws://localhost:8000");
+    //const socket = new WebSocket("ws://localhost:8000");
+    const socket = new WebSocket('wss://podsolic-merri-indivertibly.ngrok-free.dev/');
     
     socket.onopen = () => {
     console.log("Connected to the chatroom:", roomId);
@@ -159,6 +160,26 @@ socket.onmessage = (event) => {
                 console.error('Exit button not found on the page.');
             }
         });
+    </script>
+    <script nonce="<%= nonce %>">
+    // Hide footer when keyboard appears (input focused) on mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        var messageInput = document.getElementById('message-input');
+        var footer = document.querySelector('footer');
+        if (messageInput && footer) {
+            messageInput.addEventListener('focus', function() {
+                // Only hide on small screens
+                if (window.innerWidth <= 768) {
+                    footer.style.display = 'none';
+                }
+            });
+            messageInput.addEventListener('blur', function() {
+                if (window.innerWidth <= 768) {
+                    footer.style.display = '';
+                }
+            });
+        }
+    });
     </script>
 </body>
 </html>
