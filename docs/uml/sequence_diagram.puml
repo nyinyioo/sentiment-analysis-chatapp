@@ -1,0 +1,48 @@
+@startuml sequence_diagram
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipantBorderColor black
+skinparam sequenceParticipantBackgroundColor white
+skinparam sequenceLifeLineBorderColor black
+skinparam sequenceBoxBorderColor black
+skinparam sequenceBoxBackgroundColor white
+skinparam noteBorderColor black
+
+actor USER
+participant "EJS" as EJS
+participant "Server" as SRV
+participant "SessionManager" as SM
+participant "WS" as WS
+participant "Sentiment\nAnalyzer" as SA
+participant "Rasa Server" as RASA
+participant "MongoDB" as DB
+
+box "Entry"
+USER -> SRV : clickEnter\nhttp/start
+SRV -> SM : createTmpSession
+SM --> SRV : retSessionCookie
+SRV -> DB : createTmpRmID\n(addRoom)
+SRV --> EJS : retChatRmView
+end box
+
+box "Send Message"
+USER -> WS : sendMsg\nsend(roomID, text)
+WS -> SA : send(roomID, text)
+SA --> WS : returnSentimentScore
+WS --> USER : broadcastMessage\nupdateUI
+WS -> DB : saveMessage(RoomID)
+end box
+
+box "Bot Response"
+WS -> RASA : getBotResponse
+RASA --> WS : broadcastBotResponse
+WS --> USER : updateUI
+WS -> DB : saveBotMessage(RoomID)
+end box
+
+box "Exit"
+USER -> SRV : clickExit\nhttp/chatapp
+SRV -> SM !! : deleteTmpSession
+SRV -> DB !! : deleteTmpRoom
+end box
+
+@enduml

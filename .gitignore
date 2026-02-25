@@ -33,3 +33,10 @@ backend/rasa/logs/
 # Data / runtime artifacts
 data/
 *.log
+
+# Test artifacts
+.pytest_cache/
+backend/app/coverage/
+
+# Jenkins workspace venv (created at ${WORKSPACE}/.venv by Jenkinsfile)
+.venv/
