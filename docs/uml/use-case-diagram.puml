@@ -1,0 +1,30 @@
+@startuml use-case-diagram
+left to right direction
+skinparam actorBorderColor black
+skinparam actorBackgroundColor white
+skinparam usecaseBorderColor black
+skinparam usecaseBackgroundColor white
+skinparam rectangleBorderColor black
+
+actor "Actor" as USER
+actor "Rasa Server Bot" as BOT
+
+rectangle "chatApp" {
+    usecase "startSession" as UC1
+    usecase "sendChat" as UC2
+    usecase "viewSentiment" as UC3
+    usecase "getBotResponse" as UC4
+    usecase "endSession" as UC5
+}
+
+USER --> UC1
+USER --> UC2
+USER --> UC3
+USER --> UC5
+
+UC2 ..> UC3 : <<include>>
+UC2 ..> UC4 : <<include>>
+
+BOT --> UC4
+
+@enduml

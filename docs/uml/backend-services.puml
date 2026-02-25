@@ -1,0 +1,32 @@
+@startuml backend-services
+skinparam rectangle {
+    BorderColor black
+    BackgroundColor white
+    FontStyle bold
+}
+skinparam arrow {
+    Color black
+}
+skinparam linetype ortho
+
+rectangle "User Browser\nFront End (html, JS, EJS)" as FE
+
+rectangle "Node.js Application Server" as SERVER {
+    rectangle "WebSocket\nServer" as WS
+    rectangle "REST API" as REST
+    rectangle "Sentiment\nAnalyzer" as SA
+    rectangle "Session\nManager" as SM
+}
+
+rectangle "Sentiment\nAnalysis.py" as PY
+rectangle "MongoDB" as MONGO
+rectangle "Rasa Server" as RASA
+
+FE --> SERVER : https (ws / http)
+SA --> PY : spawn child process
+SM --> MONGO : read/write sessions
+REST --> MONGO : read/write rooms\n& conversations
+WS --> MONGO : persist messages
+WS --> RASA : http (REST)
+
+@enduml
