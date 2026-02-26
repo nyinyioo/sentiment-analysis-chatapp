@@ -48,6 +48,18 @@ rasa run \
   --cors "*" &
 RASA_PID=$!
 
+# ---- START NGROK ----
+echo "starting ngrok tunnels..."
+
+# Node backend + frontend (HTTP)
+npx ngrok http 3001 --log=stdout > "$PROJECT_ROOT/ngrok_http.log" &
+NGROK_HTTP_PID=$!
+
+# Give ngrok a few seconds to start
+sleep 3
+echo "ngrok started. Check public URLs in ngrok_http.log"
+
+
 cleanup() {
   echo ""
   echo "stopping node..."
@@ -57,6 +69,10 @@ cleanup() {
   echo "stopping rasa..."
   kill $ACTIONS_PID $RASA_PID 2>/dev/null || true
   wait $ACTIONS_PID $RASA_PID 2>/dev/null || true
+
+  echo "stopping ngrok..."
+  kill $NGROK_HTTP_PID 2>/dev/null || true
+  wait $NGROK_HTTP_PID 2>/dev/null || true
 
   echo "deactivating venv..."
   deactivate || true
