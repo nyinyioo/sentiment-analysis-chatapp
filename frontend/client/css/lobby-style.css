@@ -1,0 +1,184 @@
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background-color: #1a1a1a;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.lobby-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* ── Header ────────────────────────────────────────────────────────────────── */
+.lobby-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 2px solid #333;
+    margin-bottom: 1.5rem;
+}
+
+.lobby-header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    letter-spacing: 2px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────── */
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #333;
+    margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 0.75rem;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    color: #888;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────── */
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    color: white;
+    transition: opacity 0.15s;
+}
+
+.btn:hover { opacity: 0.85; }
+
+.btn-primary { background-color: #007bff; }
+.btn-enter   { background-color: #5aa896; }
+.btn-danger  { background-color: #ff4b5c; }
+
+/* ── Create Room ───────────────────────────────────────────────────────────── */
+.create-room-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+.create-room-form input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.create-room-form input::placeholder { color: #666; }
+
+/* ── Room List ──────────────────────────────────────────────────────────────── */
+.room-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.room-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: #2a2a2a;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.room-item.empty {
+    color: #666;
+    justify-content: center;
+    font-size: 0.9rem;
+    border-style: dashed;
+}
+
+.room-name {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+/* ── Profile ────────────────────────────────────────────────────────────────── */
+.profile-section {
+    background: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.profile-section h3 {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    color: #ccc;
+    font-weight: 600;
+}
+
+.profile-section input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+}
+
+.profile-section input::placeholder { color: #666; }
+
+.profile-section .btn {
+    width: 100%;
+    padding: 0.65rem;
+}
+
+.feedback-msg {
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+}
+
+.feedback-msg.error   { color: #ff4b5c; }
+.feedback-msg.success { color: #5aa896; }
+
+/* ── Mobile ─────────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+    .lobby-container { padding: 0.75rem; }
+    .lobby-header h1 { font-size: 1.1rem; }
+    .room-item { flex-wrap: wrap; }
+}

@@ -84,7 +84,7 @@ pytest -v
 
 **initializeBotSession**
 - Returns a 64-character hex token.
-- Stores session with `username` set to `"Nav-Mini"`.
+- Stores session with `username` set to `"bot"`.
 - Sets `isBot: true` on the session object.
 - Does **not** schedule an auto-delete timer (bot session persists indefinitely).
 

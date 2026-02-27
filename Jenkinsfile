@@ -4,6 +4,7 @@ pipeline {
     environment {
         NODE_ENV = 'test'
         CI      = 'true'
+        WSL_REPO = '/home/nyiman123/sentiment-analysis-chatapp'
     }
 
     triggers {
@@ -13,46 +14,46 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                // Jenkins will still checkout repo in Windows workspace
                 checkout scm
             }
         }
 
         stage('Node Install') {
             steps {
-                dir('backend/app') {
-                    sh 'npm ci'
-                }
+                sh "wsl npm ci --prefix ${WSL_REPO}/backend/app"
             }
         }
 
         stage('Node Test') {
             steps {
-                dir('backend/app') {
-                    sh 'npm test -- --forceExit'
-                }
+                sh "wsl npm test --prefix ${WSL_REPO}/backend/app -- --forceExit"
             }
         }
 
         stage('Python Setup') {
             steps {
-                sh 'python3 -m venv ${WORKSPACE}/.venv'
-                sh '${WORKSPACE}/.venv/bin/pip install -r backend/requirements-dev.txt'
+                sh "wsl python3 -m venv ${WSL_REPO}/.venv"
+                sh "wsl ${WSL_REPO}/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements-dev.txt"
             }
         }
 
         stage('Python Test') {
             steps {
-                sh '''
-                    cd backend/ml
-                    PYTHONPATH=${WORKSPACE}/backend/ml/sentiment_analysis \
-                        ${WORKSPACE}/.venv/bin/pytest sentiment_analysis/tests -v
-                '''
+                sh """
+                wsl bash -c \"
+                cd ${WSL_REPO}/backend/ml && \
+                PYTHONPATH=${WSL_REPO}/backend/ml/sentiment_analysis \
+                ${WSL_REPO}/.venv/bin/pytest sentiment_analysis/tests -v
+                \"
+                """
             }
         }
     }
 
     post {
         always {
+            // Clean Windows workspace, your WSL venv and repo are separate
             cleanWs()
         }
     }

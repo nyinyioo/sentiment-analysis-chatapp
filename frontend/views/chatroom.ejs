@@ -10,10 +10,10 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <h1>Demo User <%= room._id %></h1>
-            <a href="backend\app\routes\index.js" class="exit-button" title="Exit Chat" data-room-id="<%= room._id %>">Exit</a>
+            <h1><%= room.name %></h1>
+            <a href="#" class="exit-button" title="Exit Chat" data-room-id="<%= room._id %>">Exit</a>
         </div>
-        
+
         <div id="message-list" class="message-list"></div>
 
         <div class="chat-input">
@@ -21,162 +21,133 @@
             <button id="send-message">Send</button>
         </div>
     </div>
-        <footer>
-        <div class="footer-bottom">
-            &copy; 2026 NAV-BOT
-        </div>
+
+    <footer>
+        <div class="footer-bottom">&copy; 2026</div>
     </footer>
-    <script nonce="<%= nonce %>" src="login_assets/script.js"></script>
+
     <script type="module" nonce="<%= nonce %>">
 
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
+    const roomId  = "<%= room._id %>";
+    const isDemo  = <%= isDemo %>;
+
     function renderMarkdownMessage(msg, color) {
         const container = document.getElementById("message-list");
-        const html = marked.parse(msg.text);
-
+        const html = marked.parse(msg.text || '');
         const msgElem = document.createElement("div");
         msgElem.className = `message ${msg.isBot ? "bot-message" : "my-message"}`;
         msgElem.style.backgroundColor = color;
         msgElem.innerHTML =
-            `<div class="message-user">${msg.isBot ? msg.username : roomId}:</div>` +
+            `<div class="message-user">${msg.isBot ? msg.username : (msg.username || roomId)}:</div>` +
             `<div class="message-text">${html}</div>`;
-
         container.appendChild(msgElem);
         container.scrollTop = container.scrollHeight;
     }
 
-    // Function to determine background color based on sentiment
-        function getSentimentColor(label, score) {
-            let red = 0, green = 0, blue = 0;
-            switch (label) {
-                case 'LABEL_0': 
-                    red = 255; 
-                    green = 255 * (1 - score); 
-                    blue = 255 * (1 - score); 
-                    break;
-                case 'LABEL_1': 
-                    red = 255 * score + 128 * (1 - score); 
-                    green = 255 * score + 128 * (1 - score); 
-                    blue = 255 * score + 128 * (1 - score); 
-                    break;
-                case 'LABEL_2': 
-                    red = 255 * (1 - score);
-                    green = 255; 
-                    blue = 255 * (1 - score); 
-                    break;
-                default:
-                    red = 200; 
-                    green = 200;
-                    blue = 200; 
-            }
-            red = Math.floor(red);
-            green = Math.floor(green);
-            blue = Math.floor(blue);
-    
-            return `rgb(${red}, ${green}, ${blue})`;
+    function getSentimentColor(label, score) {
+        let red = 0, green = 0, blue = 0;
+        switch (label) {
+            case 'LABEL_0':
+                red = 255; green = 255 * (1 - score); blue = 255 * (1 - score); break;
+            case 'LABEL_1':
+                red = green = blue = 255 * score + 128 * (1 - score); break;
+            case 'LABEL_2':
+                red = 255 * (1 - score); green = 255; blue = 255 * (1 - score); break;
+            default:
+                red = green = blue = 200;
         }
-    
-    const roomId = "<%= room._id %>";
-    //const socket = new WebSocket("ws://localhost:8000");
-    const socket = new WebSocket('wss://podsolic-merri-indivertibly.ngrok-free.dev/');
-    
-    socket.onopen = () => {
-    console.log("Connected to the chatroom:", roomId);
+        return `rgb(${Math.floor(red)}, ${Math.floor(green)}, ${Math.floor(blue)})`;
+    }
 
-    // Initial Greeting Message
-    const greetingMessage = {
-        username: "Nav-Mini",
-        text: "How are you doing today?",
-        roomId: roomId,
-        isBot: true,
-        sentiment: { label: "neutral", score: 0 } 
+    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const socket = new WebSocket(`${wsProto}//${location.host}`);
+
+    socket.onopen = async () => {
+        console.log("[WS] Connected to room:", roomId);
+
+        if (isDemo) {
+            // Demo rooms show a greeting and don't load history
+            renderMarkdownMessage(
+                { username: "bot", text: "How are you doing today?", isBot: true, sentiment: { label: "neutral", score: 0 } },
+                getSentimentColor("neutral", 0)
+            );
+        } else {
+            // App rooms load previous messages from DB
+            try {
+                const res = await fetch(`/lobby/chat/${roomId}/messages`);
+                if (res.ok) {
+                    const conversation = await res.json();
+                    if (conversation && conversation.messages) {
+                        conversation.messages.forEach(msg => {
+                            const color = getSentimentColor(
+                                msg.sentiment?.label || 'LABEL_1',
+                                parseFloat(msg.sentiment?.score) || 0.5
+                            );
+                            renderMarkdownMessage(msg, color);
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error("[DEBUG] Failed to load previous messages:", err);
+            }
+        }
     };
 
-    // Append the bot's greeting (for immediate UI update) using shared renderer
-    renderMarkdownMessage(greetingMessage, getSentimentColor(greetingMessage.sentiment.label, greetingMessage.sentiment.score));
-};
+    socket.onmessage = (event) => {
+        try {
+            const message = JSON.parse(event.data);
+            const color = getSentimentColor(message.sentiment?.label || "neutral", message.sentiment?.score || 0);
+            renderMarkdownMessage(message, color);
+        } catch (error) {
+            console.error("[ERROR] Failed to process incoming message:", error);
+        }
+    };
 
-socket.onmessage = (event) => {
-    console.log("[DEBUG] Raw data received from WebSocket:", event.data);
-    try {
-        const message = JSON.parse(event.data);
-        console.log("[DEBUG] Parsed message:", message);
-
-        const sentimentLabel = message.sentiment?.label || "neutral";
-        const sentimentScore = message.sentiment?.score || 0;
-        const color = getSentimentColor(sentimentLabel, sentimentScore);
-        console.log("[DEBUG] Assigned color:", color);
-
-        // Render incoming message using the shared renderer (prevents duplicate nodes)
-        renderMarkdownMessage(message, color);
-
-    } catch (error) {
-        console.error("[ERROR] Failed to process incoming message:", error);
+    function sendMessage() {
+        const input = document.getElementById("message-input");
+        const text = input.value.trim();
+        if (text) {
+            socket.send(JSON.stringify({ roomId, text }));
+            input.value = "";
+        }
     }
-};
 
-        document.getElementById("send-message").addEventListener("click", () => {
-                    const input = document.getElementById("message-input");
-                    const text = input.value;
-                    if (text) {
-                        console.log("Sending message:", text);
-                        socket.send(JSON.stringify({ roomId, text }));
-                        input.value = "";
-                    }
-                });
-        document.getElementById("message-input").addEventListener("keydown", (event) => {
-            if (event.key === "Enter" && !event.shiftKey) { 
-                event.preventDefault(); 
-                const input = document.getElementById("message-input");
-                const text = input.value;
-                if (text) {
-                    console.log("Sending message:", text);
-                    socket.send(JSON.stringify({ roomId, text }));
-                    input.value = "";
-                }
-            }
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const exitButton = document.querySelector('.exit-button');
-            if (exitButton) {
-                exitButton.addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    const roomId = exitButton.getAttribute('data-room-id'); 
-    
-                    try {
-                        const response = await fetch(`/lobby/chat/${roomId}`, { method: 'DELETE' });
-                        if (response.ok) {
-                            console.log(`[DEBUG] Room ${roomId} deleted successfully.`);
-                            window.location.href = "/chatapp"; 
-                        } else {
-                            console.error(`[ERROR] Failed to delete room ${roomId}`);
-                        }
-                    } catch (error) {
-                        console.error(`[ERROR] ${error.message}`);
-                    }
-                });
-            } else {
-                console.error('Exit button not found on the page.');
-            }
-        });
+    document.getElementById("send-message").addEventListener("click", sendMessage);
+    document.getElementById("message-input").addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // ── Exit button ────────────────────────────────────────────────────────────
+    document.querySelector('.exit-button').addEventListener('click', async (event) => {
+        event.preventDefault();
+        if (isDemo) {
+            // Demo: delete all temp rooms, go back to login
+            try { await fetch('/lobby/chat/demo-cleanup', { method: 'DELETE' }); } catch (_) {}
+            window.location.href = '/login';
+        } else {
+            // App: keep room, go back to lobby
+            window.location.href = '/app';
+        }
+    });
+
     </script>
+
     <script nonce="<%= nonce %>">
-    // Hide footer when keyboard appears (input focused) on mobile
+    // Hide footer when keyboard appears on mobile
     document.addEventListener('DOMContentLoaded', function() {
         var messageInput = document.getElementById('message-input');
         var footer = document.querySelector('footer');
         if (messageInput && footer) {
             messageInput.addEventListener('focus', function() {
-                // Only hide on small screens
-                if (window.innerWidth <= 768) {
-                    footer.style.display = 'none';
-                }
+                if (window.innerWidth <= 768) footer.style.display = 'none';
             });
             messageInput.addEventListener('blur', function() {
-                if (window.innerWidth <= 768) {
-                    footer.style.display = '';
-                }
+                if (window.innerWidth <= 768) footer.style.display = '';
             });
         }
     });
