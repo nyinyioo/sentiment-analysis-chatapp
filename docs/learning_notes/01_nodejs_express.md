@@ -6,8 +6,6 @@ JavaScript was built to run in a browser. Node.js took that same engine (V8, fro
 
 The huge thing about Node is it's **non-blocking / event-driven**. Normal servers (like old PHP) spin up a new thread for every request. Threads are expensive. Node instead uses a **single thread with an event loop** — when it's waiting for a database, it doesn't sit there doing nothing, it handles other requests and comes back when the DB responds.
 
-Think of it like a waiter at a restaurant. A blocking server is one waiter per table — expensive. Node is one waiter who takes everyone's orders, delivers food when it's ready, and doesn't stand frozen waiting at any one table.
-
 ---
 
 ## What Is Express?
