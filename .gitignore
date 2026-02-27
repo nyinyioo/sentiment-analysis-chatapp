@@ -40,3 +40,4 @@ backend/app/coverage/
 
 # Jenkins workspace venv (created at ${WORKSPACE}/.venv by Jenkinsfile)
 .venv/
+backend/.venv-test/
