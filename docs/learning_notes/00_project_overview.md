@@ -131,6 +131,7 @@ Rasa handles scripted flows reliably at no cost (no API calls for simple greetin
 **Why session cookies instead of JWTs?**
 We chose session cookies (stateful auth) because it integrates naturally with Node.js + WebSocket architecture. All requests are handled by a centralized backend and Authentication checks are just session lookups, which keeps the logic simple and consistent across HTTP and WebSocket connections.
 JWTs, in contrast, are stateless. Once issued, a token remains valid until it expires. This adds complexity for token managemnt.
+
 Note: The tradeoff is that sessions require server-side storage. If we scale horizontally, we need a shared session store like Redis. JWTs reduce this dependency in distributed systems because each service can verify tokens independently.
 
 
