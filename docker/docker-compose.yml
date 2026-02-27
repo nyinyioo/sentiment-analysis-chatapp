@@ -3,11 +3,13 @@ services:
   mongodb:
     image: mongo
     container_name: mongodb
+    # credentials come from the project root .env — never hardcoded here
+    # env_file passes MONGO_INITDB_ROOT_USERNAME + MONGO_INITDB_ROOT_PASSWORD
+    # directly to the container (MongoDB reads these natively)
+    env_file:
+      - ../.env
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: iyn_nimda
-      MONGO_INITDB_ROOT_PASSWORD: Summertime_Revival_Nyiman_0011
     volumes:
       - ./initdb.mongo:/docker-entrypoint-initdb.d/initdb.mongo
       - ./initUsers.mongo:/docker-entrypoint-initdb.d/initUsers.mongo

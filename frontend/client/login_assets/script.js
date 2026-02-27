@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`/lobby/chat/${roomId}`, { method: 'DELETE' });
                 if (response.ok) {
                     console.log(`[DEBUG] Room ${roomId} deleted successfully.`);
-                    window.location.href = "/chatapp"; 
+                    window.location.href = "/login";
                 } else {
                     console.error(`[ERROR] Failed to delete room ${roomId}`);
                 }

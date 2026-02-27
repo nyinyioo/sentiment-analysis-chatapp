@@ -11,6 +11,7 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_PATH="$PROJECT_ROOT/venv"
 BACKEND_APP="$PROJECT_ROOT/backend/app"
 RASA_DIR="$PROJECT_ROOT/backend/rasa"
+ML_DIR="$PROJECT_ROOT/backend/ml"
 DOCKER_DIR="$PROJECT_ROOT/docker"
 
 # Load env vars
@@ -24,6 +25,11 @@ source "$VENV_PATH/bin/activate"
 echo "starting Docker containers..."
 cd "$DOCKER_DIR"
 docker-compose up -d
+
+echo "starting sentiment service..."
+cd "$ML_DIR"
+"$VENV_PATH/bin/uvicorn" sentiment_service:app --host 0.0.0.0 --port "${SENTIMENT_PORT:-8001}" &
+SENTIMENT_PID=$!
 
 echo "starting Node backend..."
 cd "$BACKEND_APP"
@@ -65,6 +71,10 @@ cleanup() {
   echo "stopping node..."
   kill $NODE_PID 2>/dev/null || true
   wait $NODE_PID 2>/dev/null || true
+
+  echo "stopping sentiment service..."
+  kill $SENTIMENT_PID 2>/dev/null || true
+  wait $SENTIMENT_PID 2>/dev/null || true
 
   echo "stopping rasa..."
   kill $ACTIONS_PID $RASA_PID 2>/dev/null || true

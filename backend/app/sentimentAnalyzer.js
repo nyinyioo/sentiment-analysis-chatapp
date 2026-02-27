@@ -1,41 +1,21 @@
+// Fix: replaced subprocess-per-message with a call to the persistent
+// FastAPI sentiment service (backend/ml/sentiment_service.py).
 
 
-const path = require('path');
-const { spawn } = require('child_process');
-const PYTHON_SCRIPT = path.join(
-  __dirname,
-  '../ml/sentiment_analysis/sentiment_analysis.py'
-);
+const SENTIMENT_URL = process.env.SENTIMENT_SERVICE_URL || 'http://localhost:8001/analyze';
 
-function analyzeSentiment(text) {
-    return new Promise((resolve, reject) => {
-        const process = spawn('python', [PYTHON_SCRIPT, text]);
-        let rawData = '';
-
-        process.stdout.on('data', (data) => {
-            rawData += data;
-        });
-
-        process.stdout.on('end', () => {
-            try {
-                const sentiment = JSON.parse(rawData.toString().trim());
-                resolve(sentiment);
-            } catch (error) {
-                reject(new Error("Failed to parse sentiment result: " + error.message));
-            }
-        });
-
-        process.stderr.on('data', (data) => {
-            const errorMessage = data.toString().trim();
-            if (errorMessage.includes("Device set to use cpu")) {
-                // Ignore this specific error message
-                return;
-            }
-            console.error("stderr received from Python script:", errorMessage); // Log stderr data
-            reject(new Error("Error from Python script: " + errorMessage));
-        });
+async function analyzeSentiment(text) {
+    const response = await fetch(SENTIMENT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
     });
+
+    if (!response.ok) {
+        throw new Error(`Sentiment service responded with ${response.status}`);
+    }
+
+    return response.json();
 }
 
 module.exports = analyzeSentiment;
-

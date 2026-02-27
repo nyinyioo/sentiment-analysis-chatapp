@@ -1,188 +1,153 @@
 'use strict';
 
-const { EventEmitter } = require('events');
+// Tests for the HTTP-based sentimentAnalyzer (calls FastAPI service via fetch)
 
-jest.mock('child_process');
-
-const { spawn } = require('child_process');
-
-// Helper: build a fake child process with controllable stdout/stderr/exit
-function makeFakeProcess() {
-  const fakeProc = new EventEmitter();
-  fakeProc.stdout = new EventEmitter();
-  fakeProc.stderr = new EventEmitter();
-  return fakeProc;
-}
-
-// Re-require to pick up the mock
 let analyzeSentiment;
+
 beforeAll(() => {
-  analyzeSentiment = require('../sentimentAnalyzer');
+    analyzeSentiment = require('../sentimentAnalyzer');
+});
+
+beforeEach(() => {
+    global.fetch = jest.fn();
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+    jest.clearAllMocks();
 });
 
-// ── happy path ───────────────────────────────────────────────────────────────
+// ── happy path ────────────────────────────────────────────────────────────────
 describe('sentimentAnalyzer happy path', () => {
-  test('resolves with {label, score} from valid JSON stdout', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('resolves with {label, score} from service response', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'POSITIVE', score: 0.99 }),
+        });
 
-    const promise = analyzeSentiment('hello world');
+        const result = await analyzeSentiment('hello world');
+        expect(result).toEqual({ label: 'POSITIVE', score: 0.99 });
+    });
 
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.99}'));
-    fakeProc.stdout.emit('end');
+    test('POSTs to the /analyze endpoint', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'POSITIVE', score: 0.9 }),
+        });
 
-    const result = await promise;
-    expect(result).toEqual({ label: 'POSITIVE', score: 0.99 });
-  });
+        await analyzeSentiment('test input');
 
-  test('spawns python with correct script path and text arg', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+        expect(global.fetch).toHaveBeenCalledWith(
+            expect.stringContaining('/analyze'),
+            expect.objectContaining({ method: 'POST' })
+        );
+    });
 
-    const promise = analyzeSentiment('test input');
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.9}'));
-    fakeProc.stdout.emit('end');
-    await promise;
+    test('sends text in the request body', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEUTRAL', score: 0.5 }),
+        });
 
-    expect(spawn).toHaveBeenCalledWith(
-      'python',
-      expect.arrayContaining([
-        expect.stringContaining('sentiment_analysis.py'),
-        'test input',
-      ])
-    );
-  });
+        await analyzeSentiment('my message');
 
-  test('handles chunked stdout (multiple data events)', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+        const [, options] = global.fetch.mock.calls[0];
+        const body = JSON.parse(options.body);
+        expect(body.text).toBe('my message');
+    });
 
-    const promise = analyzeSentiment('chunked');
+    test('sets Content-Type to application/json', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEUTRAL', score: 0.5 }),
+        });
 
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"NEG'));
-    fakeProc.stdout.emit('data', Buffer.from('ATIVE","score":0.1}'));
-    fakeProc.stdout.emit('end');
+        await analyzeSentiment('test');
 
-    const result = await promise;
-    expect(result).toEqual({ label: 'NEGATIVE', score: 0.1 });
-  });
+        const [, options] = global.fetch.mock.calls[0];
+        expect(options.headers['Content-Type']).toBe('application/json');
+    });
 
-  test('ignores "Device set to use cpu" stderr and still resolves', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('calls fetch exactly once per invocation', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'POSITIVE', score: 0.8 }),
+        });
 
-    const promise = analyzeSentiment('test');
-
-    fakeProc.stderr.emit('data', Buffer.from('Device set to use cpu'));
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.8}'));
-    fakeProc.stdout.emit('end');
-
-    await expect(promise).resolves.toMatchObject({ label: 'POSITIVE' });
-  });
+        await analyzeSentiment('once');
+        expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
 });
 
 // ── error paths ───────────────────────────────────────────────────────────────
 describe('sentimentAnalyzer error paths', () => {
-  test('rejects on invalid JSON stdout', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('rejects when service returns a non-OK status', async () => {
+        global.fetch.mockResolvedValue({ ok: false, status: 503 });
 
-    const promise = analyzeSentiment('bad json test');
+        await expect(analyzeSentiment('test')).rejects.toThrow();
+    });
 
-    fakeProc.stdout.emit('data', Buffer.from('not valid json'));
-    fakeProc.stdout.emit('end');
+    test('rejection message contains the HTTP status code', async () => {
+        global.fetch.mockResolvedValue({ ok: false, status: 503 });
 
-    await expect(promise).rejects.toThrow();
-  });
+        await expect(analyzeSentiment('test')).rejects.toThrow('503');
+    });
 
-  test('rejection message contains "Failed to parse sentiment result"', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('rejects when fetch itself throws (network error)', async () => {
+        global.fetch.mockRejectedValue(new Error('Network error'));
 
-    const promise = analyzeSentiment('bad json test');
-
-    fakeProc.stdout.emit('data', Buffer.from('not valid json'));
-    fakeProc.stdout.emit('end');
-
-    await expect(promise).rejects.toThrow('Failed to parse sentiment result');
-  });
-
-  test('rejects on unexpected stderr message', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
-
-    const promise = analyzeSentiment('error test');
-
-    fakeProc.stderr.emit('data', Buffer.from('Something went wrong'));
-
-    await expect(promise).rejects.toThrow();
-  });
-
-  test('rejection message contains "Error from Python script"', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
-
-    const promise = analyzeSentiment('error test');
-
-    fakeProc.stderr.emit('data', Buffer.from('Something went wrong'));
-
-    await expect(promise).rejects.toThrow('Error from Python script');
-  });
-
-  test('does NOT reject on "Device set to use cpu" stderr', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
-
-    const promise = analyzeSentiment('test');
-
-    // Emit the ignored stderr first, then valid stdout
-    fakeProc.stderr.emit('data', Buffer.from('Device set to use cpu'));
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"NEUTRAL","score":0.5}'));
-    fakeProc.stdout.emit('end');
-
-    await expect(promise).resolves.toBeDefined();
-  });
+        await expect(analyzeSentiment('test')).rejects.toThrow('Network error');
+    });
 });
 
-// ── return shape ─────────────────────────────────────────────────────────────
+// ── return shape ──────────────────────────────────────────────────────────────
 describe('sentimentAnalyzer return shape', () => {
-  test('result has label', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('result has label property', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEGATIVE', score: 0.8 }),
+        });
 
-    const promise = analyzeSentiment('shape test');
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.95}'));
-    fakeProc.stdout.emit('end');
+        const result = await analyzeSentiment('bad day');
+        expect(result).toHaveProperty('label');
+    });
 
-    const result = await promise;
-    expect(result).toHaveProperty('label');
-  });
+    test('result has score property', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEGATIVE', score: 0.8 }),
+        });
 
-  test('result has score', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+        const result = await analyzeSentiment('bad day');
+        expect(result).toHaveProperty('score');
+    });
 
-    const promise = analyzeSentiment('shape test');
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.95}'));
-    fakeProc.stdout.emit('end');
+    test('score is a number', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'POSITIVE', score: 0.95 }),
+        });
 
-    const result = await promise;
-    expect(result).toHaveProperty('score');
-  });
+        const result = await analyzeSentiment('great');
+        expect(typeof result.score).toBe('number');
+    });
 
-  test('score is a number', async () => {
-    const fakeProc = makeFakeProcess();
-    spawn.mockReturnValue(fakeProc);
+    test('handles NEGATIVE label', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEGATIVE', score: 0.87 }),
+        });
 
-    const promise = analyzeSentiment('shape test');
-    fakeProc.stdout.emit('data', Buffer.from('{"label":"POSITIVE","score":0.95}'));
-    fakeProc.stdout.emit('end');
+        const result = await analyzeSentiment('terrible day');
+        expect(result.label).toBe('NEGATIVE');
+    });
 
-    const result = await promise;
-    expect(typeof result.score).toBe('number');
-  });
+    test('handles NEUTRAL label', async () => {
+        global.fetch.mockResolvedValue({
+            ok: true,
+            json: async () => ({ label: 'NEUTRAL', score: 0.6 }),
+        });
+
+        const result = await analyzeSentiment('okay');
+        expect(result.label).toBe('NEUTRAL');
+    });
 });
