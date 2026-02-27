@@ -28,7 +28,7 @@ function SessionManager () {
 		return token;
 	};
 
-	const BOT_USERNAME = "Nav-Mini";
+	const BOT_USERNAME = "bot";
 	this.initializeBotSession = function() {
 		const botToken = crypto.randomBytes(32).toString('hex');
 		const botSession = { username: BOT_USERNAME, createdAt: Date.now(), isBot: true };

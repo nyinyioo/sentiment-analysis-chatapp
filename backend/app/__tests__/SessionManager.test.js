@@ -117,9 +117,9 @@ describe('SessionManager', () => {
       expect(token).toMatch(/^[0-9a-f]{64}$/);
     });
 
-    test('stores session with username "Nav-Mini"', () => {
+    test('stores session with username "bot"', () => {
       const token = sm.initializeBotSession();
-      expect(sm.sessions[token].username).toBe('Nav-Mini');
+      expect(sm.sessions[token].username).toBe('bot');
     });
 
     test('sets isBot:true on session', () => {
