@@ -37,7 +37,7 @@ pipeline {
                 // Setup Python venv inside WSL
                 bat "wsl python3 -m venv ${WSL_REPO}/backend/.venv"
                 bat "wsl ${WSL_REPO}/backend/.venv/bin/pip install --upgrade pip"
-                bat "wsl ${WSL_REPO}/backend/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements-dev.txt"
+                bat "wsl ${WSL_REPO}/backend/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements.txt"
 
                 // Run pytest
                 bat "wsl PYTHONPATH=${WSL_REPO}/backend/ml/sentiment_analysis ${WSL_REPO}/backend/.venv/bin/pytest ${WSL_REPO}/backend/ml/sentiment_analysis/tests -v --disable-warnings"
