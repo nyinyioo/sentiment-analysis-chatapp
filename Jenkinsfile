@@ -34,12 +34,12 @@ pipeline {
 
         stage('Python Setup & Test') {
             steps {
-                // Setup Python venv in WSL
+                // Setup Python venv inside WSL
                 sh "wsl python3 -m venv ${WSL_REPO}/backend/.venv"
                 sh "wsl ${WSL_REPO}/backend/.venv/bin/pip install --upgrade pip"
                 sh "wsl ${WSL_REPO}/backend/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements-dev.txt"
 
-                // Run pytest with correct PYTHONPATH
+                // Run pytest
                 sh "wsl PYTHONPATH=${WSL_REPO}/backend/ml/sentiment_analysis ${WSL_REPO}/backend/.venv/bin/pytest ${WSL_REPO}/backend/ml/sentiment_analysis/tests -v --disable-warnings"
             }
         }
