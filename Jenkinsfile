@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         NODE_ENV = 'test'
-        CI      = 'true'
+        CI       = 'true'
         WSL_REPO = '/home/nyiman123/sentiment-analysis-chatapp'
     }
 
@@ -12,6 +12,7 @@ pipeline {
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 // Jenkins will still checkout repo in Windows workspace
@@ -31,29 +32,22 @@ pipeline {
             }
         }
 
-        stage('Python Setup') {
+        stage('Python Setup & Test') {
             steps {
-                sh "wsl python3 -m venv ${WSL_REPO}/.venv"
-                sh "wsl ${WSL_REPO}/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements-dev.txt"
-            }
-        }
+                // Setup Python venv in WSL
+                sh "wsl python3 -m venv ${WSL_REPO}/backend/.venv"
+                sh "wsl ${WSL_REPO}/backend/.venv/bin/pip install --upgrade pip"
+                sh "wsl ${WSL_REPO}/backend/.venv/bin/pip install -r ${WSL_REPO}/backend/requirements-dev.txt"
 
-        stage('Python Test') {
-            steps {
-                sh """
-                wsl bash -c \"
-                cd ${WSL_REPO}/backend/ml && \
-                PYTHONPATH=${WSL_REPO}/backend/ml/sentiment_analysis \
-                ${WSL_REPO}/.venv/bin/pytest sentiment_analysis/tests -v
-                \"
-                """
+                // Run pytest with correct PYTHONPATH
+                sh "wsl PYTHONPATH=${WSL_REPO}/backend/ml/sentiment_analysis ${WSL_REPO}/backend/.venv/bin/pytest ${WSL_REPO}/backend/ml/sentiment_analysis/tests -v --disable-warnings"
             }
         }
     }
 
     post {
         always {
-            // Clean Windows workspace, your WSL venv and repo are separate
+            // Clean Windows workspace (does not touch WSL venv)
             cleanWs()
         }
     }
