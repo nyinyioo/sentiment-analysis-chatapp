@@ -52,8 +52,12 @@ Database.prototype.addConversation = function(conversation) {
         console.error("Error: Invalid Conversation fields");
         return Promise.reject(new Error("Invalid Conversation fields"));
     }
+    // Normalize room_id to ObjectId when possible so queries always match
+    if (ObjectId.isValid(conversation.room_id)) {
+        conversation.room_id = new ObjectId(conversation.room_id);
+    }
     conversation.messages.forEach(msg => {
-        msg.sentiment = msg.sentiment || 0; 
+        msg.sentiment = msg.sentiment || 0;
     });
     return this.connected.then(db =>
         db.collection('conversations').insertOne(conversation).then(result => {
@@ -85,6 +89,18 @@ Database.prototype.getUser = function(username) {
     );
 };
 
+Database.prototype.getUserCount = function() {
+    return this.connected.then(db =>
+        db.collection('users').countDocuments()
+    );
+};
+
+Database.prototype.addUser = function(user) {
+    return this.connected.then(db =>
+        db.collection('users').insertOne(user)
+    );
+};
+
 Database.prototype.updateUserProfileByUsername = function(username, updateData) {
     return this.connected.then(db =>
         db.collection('users').updateOne({ username: username }, { $set: updateData })
@@ -103,4 +119,12 @@ Database.prototype.deleteRoom = function(roomId) {
         db.collection('chatrooms').deleteOne({ _id: id })
     );
 };
+
+// Delete all demo/guest rooms (IDs starting with "temp_")
+Database.prototype.deleteDemoRooms = function() {
+    return this.connected.then(db =>
+        db.collection('chatrooms').deleteMany({ _id: { $regex: /^temp_/ } })
+    );
+};
+
 module.exports = Database;
