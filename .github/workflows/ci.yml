@@ -72,9 +72,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Codacy Analysis
+      - name: Run Codacy Analysis CLI
         uses: codacy/codacy-analysis-cli-action@v4
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          upload: true
-          max-allowed-issues: 2147483647
+          tools: eslint
+          skip-docker: true
