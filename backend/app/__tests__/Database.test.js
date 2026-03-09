@@ -202,8 +202,7 @@ describe('Database.addConversation', () => {
 // ── getLastConversation ──────────────────────────────────────────────────────
 describe('Database.getLastConversation', () => {
   let roomId;
-  const now = 1700000000000;
-
+  const now = Date.now();
   beforeEach(async () => {
     const room = await db.addRoom({ name: 'last-convo-room' });
     roomId = room._id;
