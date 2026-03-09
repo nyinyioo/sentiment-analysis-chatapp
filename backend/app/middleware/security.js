@@ -1,5 +1,5 @@
-const helmet = require('helmet');
-const crypto = require('crypto');
+import helmet from 'helmet';
+import crypto from 'crypto';
 
 function nonceMiddleware(req, res, next) {
   res.locals.nonce = crypto.randomBytes(16).toString('hex');
@@ -24,12 +24,12 @@ function helmetMiddleware() {
           "https://fonts.googleapis.com"
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "https://nyibucket.s3.amazonaws.com", "data:"],  
+        imgSrc: ["'self'", "https://nyibucket.s3.amazonaws.com", "data:"],
         mediaSrc: ["'self'", "https://nyibucket.s3.amazonaws.com"],
         connectSrc: [
           "'self'",
           "ws://localhost:8000",
-          "https://podsolic-merri-indivertibly.ngrok-free.dev", 
+          "https://podsolic-merri-indivertibly.ngrok-free.dev",
           "http://localhost:5005",
           "https://cdn.jsdelivr.net"
         ],
@@ -40,7 +40,4 @@ function helmetMiddleware() {
   });
 }
 
-module.exports = {
-  nonceMiddleware,
-  helmetMiddleware
-};
+export { nonceMiddleware, helmetMiddleware };

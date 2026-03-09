@@ -1,16 +1,25 @@
-require('dotenv').config();
-const http = require('http');
-const path = require('path');
-const express = require('express');
-const morgan = require('morgan');
-const cors = require('cors');
-const WebSocket = require('ws');
+import dotenv from 'dotenv';
+dotenv.config();
 
-const Database = require('./Database');
-const SessionManager = require('./SessionManager');
-const analyzeSentiment = require('./sentimentAnalyzer');
-const { nonceMiddleware, helmetMiddleware } = require('./middleware/security');
-const { parseCookies, hashPassword, isCorrectPassword } = require('./utils/helpers');
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import express from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+import WebSocket from 'ws';
+
+import Database from './Database.js';
+import SessionManager from './SessionManager.js';
+import analyzeSentiment from './sentimentAnalyzer.js';
+import { nonceMiddleware, helmetMiddleware } from './middleware/security.js';
+import { parseCookies, hashPassword, isCorrectPassword } from './utils/helpers.js';
+import authRoutes from './routes/auth.js';
+import lobbyRoutes from './routes/lobby.js';
+import wsHandler from './ws/handler.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -49,8 +58,8 @@ app.use((req, res, next) => {
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => res.redirect('/login'));
-app.use('/', require('./routes/auth')(db, sessionManager, hashPassword, isCorrectPassword, wss, messages));
-app.use('/lobby', require('./routes/lobby')(db, messages, sessionManager, parseCookies));
+app.use('/', authRoutes(db, sessionManager, hashPassword, isCorrectPassword, wss, messages));
+app.use('/lobby', lobbyRoutes(db, messages, sessionManager, parseCookies));
 
 // ── Message buffer init ───────────────────────────────────────────────────────
 // Populate buffers for existing rooms on startup
@@ -64,8 +73,7 @@ db.getRooms()
     .catch(err => console.error('[DB] Failed to initialize message buffers:', err));
 
 // ── WebSocket ─────────────────────────────────────────────────────────────────
-// Fix:  ws/handler.js — no duplicate here
-require('./ws/handler')(wss, db, messages, MESSAGE_BLOCK_SIZE, sessionManager, analyzeSentiment, parseCookies);
+wsHandler(wss, db, messages, MESSAGE_BLOCK_SIZE, sessionManager, analyzeSentiment, parseCookies);
 
 // ── Error handler ─────────────────────────────────────────────────────────────
 app.use(function(err, req, res, next) {

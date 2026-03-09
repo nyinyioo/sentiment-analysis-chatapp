@@ -1,11 +1,11 @@
-const express = require('express');
-const path = require('path');
-const crypto = require('crypto');
-const WebSocket = require('ws');
+import express from 'express';
+import path from 'path';
+import crypto from 'crypto';
+import WebSocket from 'ws';
 
 const MAX_USERS = 50;
 
-module.exports = function(db, sessionManager, hashPassword, isCorrectPassword, wss, messages) {
+export default function(db, sessionManager, hashPassword, isCorrectPassword, wss, messages) {
     const router = express.Router();
 
     router.get('/login', (req, res) => {
@@ -154,4 +154,4 @@ module.exports = function(db, sessionManager, hashPassword, isCorrectPassword, w
     });
 
     return router;
-};
+}

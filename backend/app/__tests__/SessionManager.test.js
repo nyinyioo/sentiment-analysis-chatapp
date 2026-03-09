@@ -1,6 +1,4 @@
-'use strict';
-
-const SessionManager = require('../SessionManager');
+import SessionManager from '../SessionManager.js';
 
 describe('SessionManager', () => {
   beforeEach(() => {
