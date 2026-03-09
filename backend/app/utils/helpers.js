@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const bcrypt = require('bcryptjs');
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 function parseCookies(cookieHeader) {
     if (!cookieHeader) return {};
@@ -30,4 +30,4 @@ async function isCorrectPassword(plaintextPassword, storedHash) {
     return checkHex === storedHex;
 }
 
-module.exports = { parseCookies, hashPassword, isCorrectPassword };
+export { parseCookies, hashPassword, isCorrectPassword };

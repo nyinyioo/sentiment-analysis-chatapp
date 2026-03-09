@@ -1,6 +1,5 @@
-'use strict';
-
-const SessionManager = require('../SessionManager');
+import { jest } from '@jest/globals';
+import SessionManager from '../SessionManager.js';
 
 describe('SessionManager', () => {
   beforeEach(() => {

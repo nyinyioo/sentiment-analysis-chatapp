@@ -1,12 +1,6 @@
-'use strict';
-
 // Tests for the HTTP-based sentimentAnalyzer (calls FastAPI service via fetch)
-
-let analyzeSentiment;
-
-beforeAll(() => {
-    analyzeSentiment = require('../sentimentAnalyzer');
-});
+import { jest } from '@jest/globals';
+import analyzeSentiment from '../sentimentAnalyzer.js';
 
 beforeEach(() => {
     global.fetch = jest.fn();

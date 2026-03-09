@@ -18,4 +18,4 @@ async function analyzeSentiment(text) {
     return response.json();
 }
 
-module.exports = analyzeSentiment;
+export default analyzeSentiment;
