@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 class SessionError extends Error {}
 
@@ -9,9 +9,9 @@ function SessionManager () {
 		const token = crypto.randomBytes(32).toString('hex');
 		const session = { username: username, createdAt: Date.now(), maxAge: maxAge };
 		this.sessions[token] = session;
-	
+
 		console.log('[DEBUG] Session created:', this.sessions);
-	
+
 		const cookieOptions = {
 			maxAge: maxAge,
 			httpOnly: true,
@@ -19,12 +19,12 @@ function SessionManager () {
 			path: '/'
 		};
 		response.cookie("cpen322-session", token, cookieOptions);
-	
+
 		setTimeout(() => {
 			console.log(`[DEBUG] Deleting session: ${token}`);
 			delete this.sessions[token];
 		}, maxAge);
-	
+
 		return token;
 	};
 
@@ -40,7 +40,7 @@ function SessionManager () {
 
 	this.deleteSession = (req) => {
 		delete req.username;
-		delete this.sessions[req.session];	
+		delete this.sessions[req.session];
 		delete req.session;
 		console.log('[DEBUG] Attempting to delete session:', req.session);
 		if (!this.sessions[req.session]) {
@@ -54,33 +54,33 @@ function SessionManager () {
 			next(new SessionError("Cookie header not found"));
 			return;
 		}
-	
+
 		const cookies = cookieHeader.split(';').map(cookie => {
 			const parts = cookie.split('=');
 			return {name: parts[0].trim(), value: parts[1]?.trim()};
 		});
 		const sessionCookie = cookies.find(cookie => cookie.name === "cpen322-session");
-	
+
 		if (!sessionCookie) {
 			next(new SessionError("Session cookie not found"));
 			return;
 		}
-	
+
 		const session = this.sessions[sessionCookie.value];
-	
+
 		if (!session) {
 			next(new SessionError("Session not found"));
 			return;
 		}
-	
+
 		req.session = sessionCookie.value;
 		req.username = session.username;
-		next();	
+		next();
 	}; */
 
 	this.middleware = (req, res, next) => {
-		console.log('Incoming request headers:', req.headers); 
-	
+		console.log('Incoming request headers:', req.headers);
+
 		const cookieHeader = req.headers.cookie;
 		if (!cookieHeader) {
 			console.error('[DEBUG] Missing cookie header in request:', req.headers);
@@ -90,35 +90,35 @@ function SessionManager () {
 			const parts = cookie.split('=');
 			return { name: parts[0].trim(), value: parts[1]?.trim() };
 		});
-		console.log('Parsed cookies:', cookies); 
-	
+		console.log('Parsed cookies:', cookies);
+
 		const sessionCookie = cookies.find(cookie => cookie.name === "cpen322-session");
-	
+
 		if (!sessionCookie) {
-			console.error("Error: Session cookie not found"); 
+			console.error("Error: Session cookie not found");
 			return next(new SessionError("Session cookie not found"));
 		}
-	
+
 		const session = this.sessions[sessionCookie.value];
-		console.log('Found session:', session); 
-	
+		console.log('Found session:', session);
+
 		if (!session) {
 			console.error(`[DEBUG] Session not found for token: ${sessionCookie.value}`);
 			console.error("[DEBUG] Active sessions:", this.sessions);
 			next(new SessionError("Session not found"));
 			return;
 		}
-	
+
 		req.session = sessionCookie.value;
 		req.username = session.username;
-		console.log('Middleware passed: username =', req.username); 
-	
+		console.log('Middleware passed: username =', req.username);
+
 		next();
 	};
-	
+
 	this.getUsername = (token) => ((token in this.sessions) ? this.sessions[token].username : null);
-};
+}
 
 
 SessionManager.Error = SessionError;
-module.exports = SessionManager;
+export default SessionManager;

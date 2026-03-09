@@ -1,8 +1,6 @@
-'use strict';
-
-const { MongoMemoryServer } = require('mongodb-memory-server');
-const { ObjectId } = require('mongodb');
-const Database = require('../Database');
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import { ObjectId } from 'mongodb';
+import Database from '../Database.js';
 
 let mongod;
 let db;

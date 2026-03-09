@@ -1,8 +1,8 @@
-const WebSocket = require('ws');
+import WebSocket from 'ws';
 
 const RASA_WEBHOOK = process.env.RASA_WEBHOOK_URL || 'http://localhost:5005/webhooks/rest/webhook';
 
-module.exports = function(wss, db, messages, messageBlockSize, sessionManager, analyzeSentiment, parseCookies) {
+export default function(wss, db, messages, messageBlockSize, sessionManager, analyzeSentiment, parseCookies) {
 
     wss.on('connection', function connection(ws, req) {
         const cookies = parseCookies(req.headers.cookie);
@@ -111,4 +111,4 @@ module.exports = function(wss, db, messages, messageBlockSize, sessionManager, a
             console.error('[WS] Error handling message:', error);
         }
     }
-};
+}

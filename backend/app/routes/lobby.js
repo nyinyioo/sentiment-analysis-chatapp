@@ -1,8 +1,8 @@
-const express = require('express');
+import express from 'express';
 
 const MAX_ROOMS = 20;
 
-module.exports = function(db, messages, sessionManager, parseCookies) {
+export default function(db, messages, sessionManager, parseCookies) {
     const router = express.Router();
 
     // Require a real (non-guest) authenticated user
@@ -146,4 +146,4 @@ module.exports = function(db, messages, sessionManager, parseCookies) {
     });
 
     return router;
-};
+}
