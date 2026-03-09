@@ -30,7 +30,10 @@ Database.prototype.getRooms = function() {
 };
 
 Database.prototype.getRoom = async function(room_id) {
-    let id = ObjectId.isValid(room_id) ? new ObjectId(room_id) : room_id;
+    if (typeof room_id !== 'string' && !(room_id instanceof ObjectId)) {
+        return Promise.reject(new Error('Invalid room_id: must be a string'));
+    }
+    let id = ObjectId.isValid(room_id) ? new ObjectId(room_id) : String(room_id);
     return this.connected.then(db => db.collection('chatrooms').findOne({ _id: id }));
 };
 
@@ -42,7 +45,7 @@ Database.prototype.addRoom = function(room) {
     room.image = room.image || 'assets/everyone-icon.png';
     return this.connected.then(db =>
         db.collection('chatrooms').insertOne(room).then(result => {
-            return db.collection('chatrooms').findOne({ _id: result.insertedId });
+            return db.collection('chatrooms').findOne({ _id: new ObjectId(result.insertedId) });
         })
     );
 };
@@ -61,7 +64,7 @@ Database.prototype.addConversation = function(conversation) {
     });
     return this.connected.then(db =>
         db.collection('conversations').insertOne(conversation).then(result => {
-            return db.collection('conversations').findOne({ _id: result.insertedId });
+            return db.collection('conversations').findOne({ _id: new ObjectId(result.insertedId) });
         })
     );
 };
@@ -80,6 +83,9 @@ Database.prototype.getLastConversation = function(room_id, before = Date.now()) 
 };
 
 Database.prototype.getUser = function(username) {
+    if (typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid username: must be a string'));
+    }
     console.log("[Database.getUser] Querying for username:", username);
     return this.connected.then(db =>
         db.collection('users').findOne({ username: username.trim().toLowerCase() }).then(user => {
