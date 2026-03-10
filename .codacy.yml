@@ -1,0 +1,8 @@
+# .codacy.yml
+
+engines:
+  bandit:
+    exclude_paths:
+      - backend/requirements.txt
+      - backend/requirements-dev.txt
+      - "**/*.txt"
