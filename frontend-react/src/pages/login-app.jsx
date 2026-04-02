@@ -37,8 +37,13 @@ function LoginAppPage() {
      */
     async function handleSubmit (authFn) {
 
-        if (!username || !password){
-            setError("Please enter Username and Password")
+        if (!username){
+            setError("Please enter Username")
+            return
+        }
+        
+        if (!password){
+            setError("Please enter Password")
             return
         }
 
@@ -100,7 +105,7 @@ function LoginAppPage() {
                         disabled = {loading}
                     >
                     Sign Up </button>
-                    
+
                 </div>
         </div>
     </div>
