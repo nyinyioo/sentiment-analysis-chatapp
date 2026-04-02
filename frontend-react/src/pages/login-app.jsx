@@ -92,14 +92,15 @@ function LoginAppPage() {
                     <button
                         onClick = {() => handleSubmit(login)}
                         disabled = {loading}
-                    Sign In>
-                    </button>
+                    >
+                    Sign In </button>
 
                     <button
                         onClick = {() => handleSubmit(signup)}
                         disabled = {loading}
-                    Sign Up>
-                    </button>
+                    >
+                    Sign Up </button>
+                    
                 </div>
         </div>
     </div>
