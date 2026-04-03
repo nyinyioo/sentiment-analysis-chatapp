@@ -8,6 +8,7 @@
  * - Services (/services/auth.js) handles data fetching
  */
 
+
 /**
  * Sends a POST /api/login request 
  * 

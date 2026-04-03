@@ -1,7 +1,7 @@
   /**
    * lobby.jsx
-   * landing page after login
-   * equivalent of lobby.ejs
+   * - landing page after login
+   * - equivalent of lobby.ejs
    */
 
 // import react hooks and API calls

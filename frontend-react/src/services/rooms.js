@@ -7,7 +7,6 @@
  * - deleteRoom()  delete a room by ID
  */
 
-
 /**
  * get all rooms from backend express servers 
  * 
@@ -18,7 +17,6 @@ export async function getRooms(){
     if (!res.ok) throw new Error ('Failed to load rooms')
     return res.json()
 }
-
 
 /**
  * creates a new room 
@@ -40,7 +38,6 @@ export async function createRoom(name){
     return res.json()
 }
 
-
 /**
  * delete a room by ID
  * @param {string} id - the room _id
@@ -52,3 +49,22 @@ export async function deleteRoom(id){
     if (!res.ok) throw new Error ('Failed to delete room')
 }
 
+
+/**
+ * getMessage for a room from the DB
+ * 
+ * @param  {string}  roomId
+ * @return {Object} conversation object {messages: []} 
+ */
+export async function getMessages(roomId){
+    const res = await fetch (`/api/lobby/chat/${roomId}/messages`)
+    if (!res.ok) throw new Error ('Failed to load messages')
+    return res.json()
+}
+
+/**
+ * deletes messages for demo room
+ */
+export async function deleteDemoMessages(roomID){
+    await fetch ('/api/lobby/chat/demo-cleanup', {method: 'DELETE'})
+}
