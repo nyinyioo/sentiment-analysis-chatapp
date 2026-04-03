@@ -54,3 +54,22 @@ export async function signup(username, password) {
 
   return data
 }
+
+
+/**
+ * Sends a /GET /api/start request 
+ * - create a temp guest session and room
+ * 
+ * Vite proxy rewrites:
+ *   - /api/start to /start to match Express
+ * @return {Object} room - created room object, contains room_.id for navigation
+ */
+
+export async function startDemo() {
+  const res = await fetch('/api/start', {
+  headers: {'Accept' : 'application/json'}
+  })
+
+  if (!res.ok) throw new Error('Failed to create a demo room')
+  return res.json() // returns the room object { _id, name, image }
+}
