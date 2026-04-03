@@ -10,7 +10,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-// ── happy path ────────────────────────────────────────────────────────────────
+// happy path
 describe('sentimentAnalyzer happy path', () => {
     test('resolves with {label, score} from service response', async () => {
         global.fetch.mockResolvedValue({
@@ -72,7 +72,7 @@ describe('sentimentAnalyzer happy path', () => {
     });
 });
 
-// ── error paths ───────────────────────────────────────────────────────────────
+// error path
 describe('sentimentAnalyzer error paths', () => {
     test('rejects when service returns a non-OK status', async () => {
         global.fetch.mockResolvedValue({ ok: false, status: 503 });
@@ -93,8 +93,8 @@ describe('sentimentAnalyzer error paths', () => {
     });
 });
 
-// ── return shape ──────────────────────────────────────────────────────────────
-describe('sentimentAnalyzer return shape', () => {
+// return sentiment
+describe('sentimentAnalyzer', () => {
     test('result has label property', async () => {
         global.fetch.mockResolvedValue({
             ok: true,
