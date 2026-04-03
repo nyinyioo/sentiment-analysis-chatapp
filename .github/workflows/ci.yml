@@ -54,6 +54,9 @@ jobs:
       - name: Build React app
         run: npm run build --prefix frontend-react
 
+      - name: Run React tests
+        run: npm test --prefix frontend-react -- --run
+
   python-test:
     name: Python Tests
     runs-on: ubuntu-latest

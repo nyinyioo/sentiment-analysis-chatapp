@@ -2,14 +2,16 @@
 # Starts:
 # - Docker services
 # - Node.js backend
+# - React frontend
 # - Rasa API + actions
-# Stops everything cleanly on Ctrl+C
+# - Stops on Ctrl+C
 
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENV_PATH="$PROJECT_ROOT/venv"
 BACKEND_APP="$PROJECT_ROOT/backend/app"
+FRONTEND_DIR="$PROJECT_ROOT/frontend-react"
 RASA_DIR="$PROJECT_ROOT/backend/rasa"
 ML_DIR="$PROJECT_ROOT/backend/ml"
 DOCKER_DIR="$PROJECT_ROOT/docker"
@@ -42,6 +44,11 @@ fi
 $NODE_CMD &
 NODE_PID=$!
 
+echo "starting React frontend..."
+cd "$FRONTEND_DIR"
+npm run dev &
+FRONTEND_PID=$!
+
 echo "starting Rasa actions server..."
 cd "$RASA_DIR"
 rasa run actions --port "${RASA_ACTIONS_PORT:-5055}" &
@@ -71,6 +78,10 @@ cleanup() {
   echo "stopping node..."
   kill $NODE_PID 2>/dev/null || true
   wait $NODE_PID 2>/dev/null || true
+
+  echo "stopping React frontend..."
+  kill $FRONTEND_PID 2>/dev/null || true
+  wait $FRONTEND_PID 2>/dev/null || true
 
   echo "stopping sentiment service..."
   kill $SENTIMENT_PID 2>/dev/null || true
