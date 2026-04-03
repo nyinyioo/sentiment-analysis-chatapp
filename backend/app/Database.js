@@ -45,7 +45,8 @@ Database.prototype.addRoom = function(room) {
     room.image = room.image || 'assets/everyone-icon.png';
     return this.connected.then(db =>
         db.collection('chatrooms').insertOne(room).then(result => {
-            return db.collection('chatrooms').findOne({ _id: new ObjectId(result.insertedId) });
+            let insertedId = ObjectId.isValid(result.insertedId) ? new ObjectId(result.insertedId) : result.insertedId;
+            return db.collection('chatrooms').findOne({ _id: insertedId });
         })
     );
 };
@@ -126,7 +127,6 @@ Database.prototype.deleteRoom = function(roomId) {
     );
 };
 
-// Delete all demo/guest rooms (IDs starting with "temp_")
 Database.prototype.deleteDemoRooms = function() {
     return this.connected.then(db =>
         db.collection('chatrooms').deleteMany({ _id: { $regex: /^temp_/ } })

@@ -48,36 +48,6 @@ function SessionManager () {
 		}
 	};
 
-/* 	this.middleware = (req, res, next) => {
-		const cookieHeader = req.headers.cookie;
-		if (!cookieHeader) {
-			next(new SessionError("Cookie header not found"));
-			return;
-		}
-
-		const cookies = cookieHeader.split(';').map(cookie => {
-			const parts = cookie.split('=');
-			return {name: parts[0].trim(), value: parts[1]?.trim()};
-		});
-		const sessionCookie = cookies.find(cookie => cookie.name === "cpen322-session");
-
-		if (!sessionCookie) {
-			next(new SessionError("Session cookie not found"));
-			return;
-		}
-
-		const session = this.sessions[sessionCookie.value];
-
-		if (!session) {
-			next(new SessionError("Session not found"));
-			return;
-		}
-
-		req.session = sessionCookie.value;
-		req.username = session.username;
-		next();
-	}; */
-
 	this.middleware = (req, res, next) => {
 		console.log('Incoming request headers:', req.headers);
 
