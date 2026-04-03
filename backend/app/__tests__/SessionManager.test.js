@@ -10,7 +10,7 @@ describe('SessionManager', () => {
     jest.useRealTimers();
   });
 
-  // ── constructor ──────────────────────────────────────────────────────────────
+  // constructor
   describe('constructor', () => {
     test('starts with empty sessions object', () => {
       const sm = new SessionManager();
@@ -27,7 +27,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── createSession ────────────────────────────────────────────────────────────
+  // createSession
   describe('createSession', () => {
     let sm;
     let res;
@@ -103,7 +103,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── initializeBotSession ─────────────────────────────────────────────────────
+  // initializeBotSession 
   describe('initializeBotSession', () => {
     let sm;
 
@@ -133,7 +133,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── deleteSession ────────────────────────────────────────────────────────────
+  // deleteSession 
   describe('deleteSession', () => {
     let sm;
 
@@ -168,7 +168,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── middleware ───────────────────────────────────────────────────────────────
+  // middleware 
   describe('middleware', () => {
     let sm;
 
@@ -241,7 +241,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── getUsername ──────────────────────────────────────────────────────────────
+  // getUsername 
   describe('getUsername', () => {
     let sm;
 
@@ -264,7 +264,7 @@ describe('SessionManager', () => {
     });
   });
 
-  // ── SessionManager.Error ─────────────────────────────────────────────────────
+  // SessionManager.Error 
   describe('SessionManager.Error', () => {
     test('is instanceof Error', () => {
       const e = new SessionManager.Error('oops');

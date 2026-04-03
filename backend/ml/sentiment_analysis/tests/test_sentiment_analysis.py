@@ -77,6 +77,10 @@ class TestAnalyzeSentiment:
         result = sa.analyze_sentiment("okay")
         assert result["label"] == "NEUTRAL"
 
+    def test_returns_none_when_text_is_none(self):
+        result = sa.analyze_sentiment(None)
+        assert result is None
+
 
 # ---------------------------------------------------------------------------
 # TestMainEntryPoint
@@ -164,3 +168,4 @@ class TestPipelineInitialization:
             import sentiment_analysis as _sa  # noqa: F401
             _, kwargs = mock_p.call_args
             assert kwargs.get("device") == -1
+

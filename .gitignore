@@ -40,4 +40,4 @@ backend/app/coverage/
 
 # Jenkins workspace venv (created at ${WORKSPACE}/.venv by Jenkinsfile)
 .venv/
-backend/.venv-test/
+backend/.venv-test/backend/app/.coverage\nbackend/ml/.coverage\nfrontend-react/coverage/

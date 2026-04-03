@@ -16,7 +16,7 @@ afterAll(async () => {
   await mongod.stop();
 }, 30000);
 
-// ── constructor ──────────────────────────────────────────────────────────────
+// constructor
 describe('Database constructor', () => {
   test('.connected is a Promise', () => {
     expect(db.connected).toBeInstanceOf(Promise);
@@ -44,7 +44,7 @@ describe('Database constructor', () => {
   });
 });
 
-// ── getRooms ─────────────────────────────────────────────────────────────────
+// getRooms
 describe('Database.getRooms', () => {
   afterEach(async () => {
     const conn = await db.connected;
@@ -75,7 +75,7 @@ describe('Database.getRooms', () => {
   });
 });
 
-// ── getRoom ───────────────────────────────────────────────────────────────────
+// getRoom
 describe('Database.getRoom', () => {
   let roomId;
 
@@ -105,7 +105,7 @@ describe('Database.getRoom', () => {
   });
 });
 
-// ── addRoom ───────────────────────────────────────────────────────────────────
+// addRoom
 describe('Database.addRoom', () => {
   afterEach(async () => {
     const conn = await db.connected;
@@ -138,7 +138,7 @@ describe('Database.addRoom', () => {
   });
 });
 
-// ── addConversation ──────────────────────────────────────────────────────────
+// addConversation
 describe('Database.addConversation', () => {
   let roomId;
 
@@ -199,7 +199,7 @@ describe('Database.addConversation', () => {
   });
 });
 
-// ── getLastConversation ──────────────────────────────────────────────────────
+// getLastConversation
 describe('Database.getLastConversation', () => {
   let roomId;
   const now = Date.now();
@@ -242,7 +242,7 @@ describe('Database.getLastConversation', () => {
   });
 });
 
-// ── getUser ───────────────────────────────────────────────────────────────────
+// getUser
 describe('Database.getUser', () => {
   beforeEach(async () => {
     const conn = await db.connected;
@@ -276,7 +276,7 @@ describe('Database.getUser', () => {
   });
 });
 
-// ── updateUserProfileByUsername ───────────────────────────────────────────────
+// updateUserProfileByUsername
 describe('Database.updateUserProfileByUsername', () => {
   beforeEach(async () => {
     const conn = await db.connected;
@@ -313,7 +313,7 @@ describe('Database.updateUserProfileByUsername', () => {
   });
 });
 
-// ── getRoomByName ─────────────────────────────────────────────────────────────
+// getRoomByName 
 describe('Database.getRoomByName', () => {
   afterEach(async () => {
     const conn = await db.connected;
@@ -333,7 +333,7 @@ describe('Database.getRoomByName', () => {
   });
 });
 
-// ── deleteRoom ────────────────────────────────────────────────────────────────
+// deleteRoom
 describe('Database.deleteRoom', () => {
   afterEach(async () => {
     const conn = await db.connected;

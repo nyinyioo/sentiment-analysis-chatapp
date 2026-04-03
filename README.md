@@ -5,8 +5,8 @@
 
 
 ### Overview
-- A real-time chat application with Rasa chatbot (NLU training is still a work in progress) and a GPT-4o-mini fallback.
-- Stack: MongoDB, Express, EJS, Node.js, Python (FastAPI + Hugging Face)
+- A real-time chat app with Rasa chatbot (NLU training is still a work in progress) and a GPT-4o-mini fallback.
+- Stack: Stack: MongoDB, Express, React, Node.js, Python (FastAPI + Hugging Face)
 
 
 ### Set-Up Instructions
@@ -19,19 +19,20 @@ source venv/bin/activate
 pip install -r backend/requirements.txt
 cd backend/app
 npm install
-cd ../..
+cd ../../frontend-react
+npm install
+cd ..
 ./scripts/start.sh
 ```
   
 
 ### Testing
 
-- Unit tests cover the Node.js backend (Jest) and Python ML module (pytest). 
+Unit tests are implemented for each module
+- **Backend**: Node.js (Jest) and Python ML module (pytest)  
+- **Frontend**: React (Vitest)
 
-- The sentiment analyzer mocks `child_process` and the Python tests mocks `transformers.pipeline` during tests.
-
-- Each module is tested in isolation. 
-
+Run tests using the following commands:
 
 ```bash
 # Node.js tests
@@ -39,4 +40,7 @@ cd backend/app && npm test
 
 # Python tests
 source venv/bin/activate && cd backend/ml && pytest -v
+
+# React tests
+cd frontend-react/ && npm test
 ```

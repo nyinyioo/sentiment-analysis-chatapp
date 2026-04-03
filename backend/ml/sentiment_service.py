@@ -1,9 +1,5 @@
 """
 Persistent sentiment analysis microservice.
-Fix: replaces the subprocess-per-message approach.
-The transformer model loads once at startup and stays in memory. 
-All requests are served in <100ms instead of a 2+ second cold-start 
-on every single chat message.
 
 Run with:
     uvicorn sentiment_service:app --host 0.0.0.0 --port 8001

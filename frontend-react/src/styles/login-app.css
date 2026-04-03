@@ -1,0 +1,77 @@
+/**
+ * login-app.css
+ */
+
+/* Full-page centered layout with space gif background */
+.login-body {
+  font-family: 'Roboto', sans-serif;
+  background: url('/assets/space.gif') repeat fixed center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  color: white;
+}
+
+/* Card container for the form */
+.login-container {
+  background: rgb(53, 53, 53);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(239, 234, 234, 0.1);
+  width: 300px;
+  box-sizing: border-box;
+}
+
+/* Spacing between input fields */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Input field styling */
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Button base styles */
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #5aa896;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.login-container button:hover {
+  background-color: #489080;
+}
+
+/* Side-by-side Sign In / Sign Up buttons */
+.button-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.button-group button {
+  flex: 1;
+  width: auto;
+}
+
+/* Error message shown on failed login/signup */
+.error-message {
+  color: red;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
