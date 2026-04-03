@@ -38,12 +38,12 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 function App() {
   return (
-    // BrowserRouter enables client-side routing.
-    // Instead of the browser asking the server for 
-    // a new HTML page on every click,
-    // React swaps DOM elements to show different "pages"
-    // without reloading the whole page.
-    // This is what makes React a "Single Page Application" (SPA).
+    /** 
+     * BrowserRouter enables client-side routing.
+     * Instead of the browser asking the server for 
+     * a new HTML page on every click,
+     * React swaps DOM elements to show different pages (SPA)
+     */
     <BrowserRouter>
       {/* AuthProvider wraps all routes so every page
        can access auth state via useAuth() */}
