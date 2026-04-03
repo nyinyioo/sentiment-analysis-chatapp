@@ -7,7 +7,8 @@
 // import hooks and API calls
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import {login, signup} from "../services/auth"
+import { login, signup } from "../services/auth"
+import { useAuth } from "../context/AuthContext"
 import "../styles/login-app.css" 
 
 
@@ -29,6 +30,7 @@ function LoginAppPage() {
      * const navigate = useNavigate()
     */
     const navigate = useNavigate()
+    const { login: setAuthUser } = useAuth() 
 
 
     /**
@@ -51,11 +53,12 @@ function LoginAppPage() {
         setLoading(true)             // disable buttons while waiting for response
 
         try{
-            await authFn (username, password)
+            await authFn(username, password)
+            setAuthUser(username)    // update global auth state so ProtectedRoute lets us through
             navigate('/lobby')       // on success, redirect to lobby page
         } catch (err) {              // err.message comes from throw in services/auth.js
             setError(err.message)
-        } finally{             
+        } finally{
             setLoading(false)        // reenable buttons
         }
     }

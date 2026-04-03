@@ -10,13 +10,17 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { marked } from 'marked'
 import useWebSocket from '../hooks/useWebSocket'
 import { getMessages, deleteDemoMessages, getRooms } from '../services/rooms'
+import { useAuth } from '../context/AuthContext'
 import '../styles/chatroom.css'
 
 function ChatroomPage() {
 
   // read roomId from /chat/:roomId
-  const { roomId } = useParams()            
-  const navigate = useNavigate()      
+  const { roomId } = useParams()
+  const navigate = useNavigate()
+
+  // get username (auth) from global auth state
+  const { username } = useAuth()      
 
   // A room is a demo room if its ID starts with 'temp_'
   const isDemo = roomId.startsWith('temp_')
@@ -169,7 +173,7 @@ function ChatroomPage() {
               style={{ backgroundColor: color }}
             >
               <div className="message-user">
-                {msg.isBot ? msg.username : (msg.username || roomId)}:
+                {msg.isBot ? msg.username : (msg.username || username)}:
               </div>
               <div
                 className="message-text"

@@ -7,8 +7,9 @@
 // import react hooks and API calls
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { getProfile, updateProfile } from '../services/auth'
+import { updateProfile } from '../services/auth'
 import { getRooms, createRoom, deleteRoom } from '../services/rooms'
+import { useAuth } from '../context/AuthContext'
 import '../styles/lobby.css'
 
 
@@ -18,7 +19,6 @@ function LobbyPage() {
    * useState 
    * const [state, setState] = useState (initialState)
    */
-  const [username, setUsername] = useState('')          // logged-in user's name
   const [rooms, setRooms] = useState([])                // list of chat rooms
   const [newRoomName, setNewRoomName] = useState('')    // input for new room names
   const [roomError, setRoomError] = useState('')        // error shown in rooms tab
@@ -32,24 +32,12 @@ function LobbyPage() {
 
   const navigate = useNavigate()
 
-  // useEffect(fn, [])
-  // loads when page load, not on every render
+  // get username and logout from AuthContext 
+  const { username, logout } = useAuth()
+
   useEffect(() => {
     loadRooms()
-    loadProfile()
-    }, [])
-
-
-  // get Username
-  async function loadProfile() {
-    try{
-      const data = await getProfile()
-      setUsername(data.username)
-
-    } catch {
-      navigate('/login')
-    }
-  }
+  }, [])
 
   // get room object [{_id, name, image, messages}]
   async function loadRooms() {
@@ -118,7 +106,12 @@ function LobbyPage() {
         <h1>CHATAPP</h1>
         <div className="header-right">
           <span>{username}</span>
-          <a href="/api/logout" className="btn btn-danger">Logout</a>
+          {/* logout: clear session on server, clear AuthContext state, redirect to login */}
+          <button className="btn btn-danger" onClick={async () => {
+            await fetch('/api/logout')
+            logout()
+            navigate('/login')
+          }}>Logout</button>
         </div>
       </header>
 
