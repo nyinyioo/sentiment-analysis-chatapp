@@ -4,7 +4,7 @@
  * - Equivalent to login-app.ejs in the EJS version
  */
 
-// import hooks and API services 
+// import hooks and API calls
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {login, signup} from "../services/auth"
@@ -41,7 +41,7 @@ function LoginAppPage() {
             setError("Please enter Username")
             return
         }
-        
+
         if (!password){
             setError("Please enter Password")
             return

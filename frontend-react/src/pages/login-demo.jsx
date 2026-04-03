@@ -4,7 +4,7 @@
  * - Equivalent of login.ejs
  */
 
-// import react hooks
+// import react hooks and API calls
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { startDemo } from '../services/auth'
@@ -14,7 +14,7 @@ function LoginDemoPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // useNavigate lets us redirect 
+  // useNavigate - redirect 
   const navigate = useNavigate()
 
   /**
