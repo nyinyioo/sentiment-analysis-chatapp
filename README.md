@@ -6,7 +6,7 @@
 
 ### Overview
 - A real-time chat app with Rasa chatbot (NLU training is still a work in progress) and a GPT-4o-mini fallback.
-- Stack: Stack: MongoDB, Express, React, Node.js, Python (FastAPI + Hugging Face)
+- Stack: MongoDB, Express, React, Node.js, Python (FastAPI + Hugging Face)
 
 
 ### Set-Up Instructions
