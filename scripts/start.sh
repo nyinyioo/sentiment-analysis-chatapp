@@ -24,6 +24,13 @@ fi
 echo "activating Python venv..."
 source "$VENV_PATH/bin/activate"
 
+
+export NVM_DIR="$HOME/.nvm"
+source "$NVM_DIR/nvm.sh"
+nvm use 22
+echo "Node version: $(node -v)"
+
+
 echo "starting Docker containers..."
 cd "$DOCKER_DIR"
 docker-compose up -d
@@ -65,7 +72,7 @@ RASA_PID=$!
 echo "starting ngrok tunnels..."
 
 # Node backend + frontend (HTTP)
-npx ngrok http 3001 --log=stdout > "$PROJECT_ROOT/ngrok_http.log" &
+npx ngrok http 5173 --log=stdout > "$PROJECT_ROOT/ngrok_http.log" &
 NGROK_HTTP_PID=$!
 
 # Give ngrok a few seconds to start
