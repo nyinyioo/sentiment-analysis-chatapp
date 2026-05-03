@@ -10,7 +10,8 @@ export default defineConfig({
 
   // react dev server (vite default port)
   server: {
-    port: 5173,       
+    port: 5173,   
+    allowedHosts: ["podsolic-merri-indivertibly.ngrok-free.dev"],    
 
     // any requests to /api will be forwared to express backend
     // react port 5173 -> express port 3001
@@ -33,6 +34,7 @@ export default defineConfig({
         ws: true,
         changeOrigin: true,
       },
+
     },
   },
 })
