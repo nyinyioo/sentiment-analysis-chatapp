@@ -3,6 +3,13 @@
 engines:
   bandit:
     exclude_paths:
-      - backend/requirements.txt
-      - backend/requirements-dev.txt
-      - "**/*.txt"
+      - "node_modules/**"
+      - "**/node_modules/**"
+      - "frontend-react/node_modules/**"
+      - "backend/app/node_modules/**"
+      - "**/coverage/**"
+      - "**/.coverage"
+      - "venv/**"
+      - "**/__pycache__/**"
+      - "docker/**"
+      - "*.log"
