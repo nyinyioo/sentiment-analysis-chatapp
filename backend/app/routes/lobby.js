@@ -84,6 +84,57 @@ export default function(db, messages, sessionManager, parseCookies) {
         }
     });
 
+
+    // whispers: the caller's private chats with the assistant
+    // a client can never read another user's whispers
+
+    // Load my whispers in a room (oldest first)
+    router.get('/chat/:room_id/whispers', requireAppUser, async (req, res) => {
+        try {
+            const whispers = await db.getWhispers(req.params.room_id, req.username);
+            res.json({ whispers });
+        } catch (error) {
+            console.error(`Error fetching whispers for room ${req.params.room_id}:`, error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    // Delete my whispers in a room
+    router.delete('/chat/:room_id/whispers', requireAppUser, async (req, res) => {
+        try {
+            const result = await db.deleteWhispers(req.username, req.params.room_id);
+            res.json({ deleted: result.deletedCount });
+        } catch (error) {
+            console.error(`Error deleting whispers for room ${req.params.room_id}:`, error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    // Delete my whispers everywhere
+    router.delete('/whispers', requireAppUser, async (req, res) => {
+        try {
+            const result = await db.deleteWhispers(req.username);
+            res.json({ deleted: result.deletedCount });
+        } catch (error) {
+            console.error('Error deleting whispers:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
+
+    // Mark one of my whispers as shared to the group
+    router.post('/chat/:room_id/whispers/:id/share', requireAppUser, async (req, res) => {
+        try {
+            const result = await db.markWhisperShared(req.params.id, req.username);
+            if (result.matchedCount === 0) {
+                return res.status(404).json({ error: 'Whisper not found' });
+            }
+            res.json({ shared: true });
+        } catch (error) {
+            console.error(`Error sharing whisper ${req.params.id}:`, error);
+            res.status(400).json({ error: 'Invalid whisper id' });
+        }
+    });
+
     // Create room — app users only
     router.post('/chat', requireAppUser, async (req, res) => {
         const { name, image } = req.body;
