@@ -34,9 +34,11 @@ function useWebSocket(roomId, onMessage) {
     const socket = new WebSocket(`${wsProto}//${location.host}/ws`)
     socketRef.current = socket
 
-    // logging if ws connected
+    // announce the room so the server delivers this room's broadcasts
+    // before we type anything (and knows a reload is not a "leave")
     socket.onopen = () => {
       console.log('[WS] Connected to room:', roomId)
+      socket.send(JSON.stringify({ type: 'join', roomId }))
     }
 
     // message received from server

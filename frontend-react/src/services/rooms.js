@@ -65,6 +65,60 @@ export async function getMessages(roomId){
 /**
  * deletes messages for demo room
  */
-export async function deleteDemoMessages(roomID){
+export async function deleteDemoMessages(){
     await fetch ('/api/lobby/chat/demo-cleanup', {method: 'DELETE'})
+}
+
+
+// add whisper functionality
+
+/**
+ * my saved whispers in a room (oldest first)
+ * @param {string} roomId
+ * @return {Object} { whispers: [{ _id, ts, text, query, reply, shared_at }] }
+ */
+export async function getWhispers(roomId){
+    const res = await fetch (`/api/lobby/chat/${roomId}/whispers`, {
+        headers: { 'Accept': 'application/json' },
+    })
+    if (!res.ok) throw new Error ('Failed to load whispers')
+    return res.json()
+}
+
+/**
+ * delete my whispers in one room
+ * @param {string} roomId
+ */
+export async function clearWhispers(roomId){
+    const res = await fetch (`/api/lobby/chat/${roomId}/whispers`, {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' },
+    })
+    if (!res.ok) throw new Error ('Failed to clear whispers')
+    return res.json()
+}
+
+
+// delete all whispers across all rooms
+export async function clearAllWhispers(){
+    const res = await fetch ('/api/lobby/whispers', {
+        method: 'DELETE',
+        headers: { 'Accept': 'application/json' },
+    })
+    if (!res.ok) throw new Error ('Failed to clear whispers')
+    return res.json()
+}
+
+/**
+ * mark one of my whispers as shared to the group
+ * @param {string} roomId
+ * @param {string} whisperId
+ */
+export async function shareWhisper(roomId, whisperId){
+    const res = await fetch (`/api/lobby/chat/${roomId}/whispers/${whisperId}/share`, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+    })
+    if (!res.ok) throw new Error ('Failed to mark whisper as shared')
+    return res.json()
 }

@@ -94,3 +94,29 @@ export async function updateProfile(payload){
   if (!res.ok) throw new Error (data.message || 'Failed to Update Profile')
   return data
 }
+
+/**
+ * Sends a /GET /api/settings
+ * @return {Object} { whisperMemory: 'remember' | 'incognito' }
+ */
+export async function getSettings(){
+  const res = await fetch ('/api/settings', { headers: { 'Accept': 'application/json' } })
+  if (!res.ok) throw new Error ('Failed to get settings')
+  return res.json()
+}
+
+/**
+ * Sends a /PUT /api/settings
+ * @param {Object} payload e.g. { whisperMemory: 'incognito' }
+ * @return {Object} the updated settings
+ */
+export async function updateSettings(payload){
+  const res = await fetch ('/api/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  const data = await res.json()
+  if (!res.ok) throw new Error (data.error || 'Failed to update settings')
+  return data
+}
