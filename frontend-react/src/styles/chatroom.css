@@ -123,7 +123,7 @@ body {
     position: absolute;
     top: calc(100% + 6px);
     right: 0;
-    min-width: 180px;
+    min-width: 250px;
     background-color: var(--chat-surface-2);
     border: 1px solid var(--chat-border);
     border-radius: 14px;
@@ -262,6 +262,11 @@ body {
     overflow-wrap: anywhere;
     white-space: pre-wrap;
     transition: background-color 0.2s ease;
+    text-align: left; /* index.css centers body text; bubbles align by side */
+}
+
+.message-row.mine .message-bubble {
+    text-align: right;
 }
 
 .message-bubble p {
@@ -424,4 +429,144 @@ body {
     .chat-input {
         padding: 0.5rem 0.6rem calc(0.5rem + env(safe-area-inset-bottom));
     }
+}
+
+
+/* Private Whispers ------------------------------------------------- */
+/* "hey chat, ..." questions and replies. Only the asker sees these rows. */
+
+.message-row.private {
+    opacity: 0.95;
+}
+
+.message-bubble.whisper {
+    background-color: var(--chat-surface);
+    color: var(--chat-text);
+    border: 1.5px dashed var(--chat-accent);
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.message-bubble.whisper-error {
+    border-color: var(--chat-danger);
+    color: var(--chat-muted);
+}
+
+.message-bubble ul,
+.message-bubble ol {
+    margin: 0.3rem 0 0;
+    padding-left: 1.2rem;
+}
+
+.assistant-avatar {
+    background-color: var(--chat-accent);
+}
+
+.whisper-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--chat-muted);
+}
+
+.message-row.mine .whisper-meta {
+    padding-right: 0.15rem;
+}
+
+.share-button {
+    background: none;
+    border: 1px solid var(--chat-accent);
+    color: var(--chat-accent);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.share-button:hover {
+    background-color: var(--chat-accent);
+    color: #fff;
+}
+
+/* typing indicator while the assistant works */
+.message-bubble.thinking {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 0.9rem 1.1rem;
+}
+
+.thinking-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--chat-muted);
+    animation: thinking-bounce 1.2s infinite ease-in-out;
+}
+
+.thinking-dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes thinking-bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-4px); opacity: 1; }
+}
+
+
+/* Assistant memory controls -------------------------------------------------- */
+
+.menu-section {
+    padding: 0.5rem 0.8rem 0.6rem;
+    border-top: 1px solid var(--chat-border);
+    border-bottom: 1px solid var(--chat-border);
+    margin: 0.25rem 0;
+}
+
+.menu-section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--chat-muted);
+    margin-bottom: 0.45rem;
+}
+
+/* two-option switch */
+.segmented {
+    display: flex;
+    background-color: var(--chat-surface);
+    border: 1px solid var(--chat-border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.menu-dropdown .segmented button {
+    flex: 1 1 0;
+    text-align: center;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--chat-muted);
+    white-space: nowrap;
+}
+
+.menu-dropdown .segmented button:hover {
+    background-color: var(--chat-surface-2);
+}
+
+.menu-dropdown .segmented button.active {
+    background-color: var(--chat-accent);
+    color: #fff;
+}
+
+.shared-tag {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--chat-muted);
+    border: 1px solid var(--chat-border);
+    border-radius: 999px;
+    padding: 0.15rem 0.65rem;
 }
