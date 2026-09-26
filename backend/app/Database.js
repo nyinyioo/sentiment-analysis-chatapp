@@ -133,4 +133,108 @@ Database.prototype.deleteDemoRooms = function() {
     );
 };
 
+
+// Whisper: a private message between a user and the room assistant
+// Stored in the `whispers` collection, keyed by (room_id, username).
+function normalizeRoomId(room_id) {
+    return ObjectId.isValid(room_id) ? new ObjectId(room_id) : room_id;
+}
+
+
+// Default per-user settings for whisper memory.
+// remember: kept until you clear them
+// session: deleted when you leave the room
+export const DEFAULT_USER_SETTINGS = { whisperMemory: 'session' };
+export const WHISPER_MEMORY_MODES = ['remember', 'session'];
+
+Database.prototype.addWhisper = function(whisper) {
+    if (!whisper?.room_id || typeof whisper.username !== 'string' ||
+        typeof whisper.query !== 'string' || typeof whisper.reply !== 'string') {
+        return Promise.reject(new Error('Invalid whisper fields'));
+    }
+    const doc = {
+        room_id: normalizeRoomId(whisper.room_id),
+        username: whisper.username,
+        ts: typeof whisper.ts === 'number' ? whisper.ts : Date.now(),
+        text: typeof whisper.text === 'string' ? whisper.text : whisper.query,
+        query: whisper.query,
+        reply: whisper.reply,
+        shared_at: null,
+    };
+    return this.connected.then(db =>
+        db.collection('whispers').insertOne(doc).then(result =>
+            db.collection('whispers').findOne({ _id: result.insertedId })
+        )
+    );
+};
+
+// Get the last `limit` whispers of a user in a room, oldest first.
+Database.prototype.getWhispers = function(room_id, username, limit = 50) {
+    if (typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid username: must be a string'));
+    }
+    return this.connected.then(db =>
+        db.collection('whispers')
+            .find({ room_id: normalizeRoomId(room_id), username })
+            .sort({ ts: -1 })
+            .limit(limit)
+            .toArray()
+            .then(rows => rows.reverse())
+    );
+};
+
+// Delete a user's whispers in one room, or everywhere when room_id is omitted.
+Database.prototype.deleteWhispers = function(username, room_id) {
+    if (typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid username: must be a string'));
+    }
+    const filter = { username };
+    if (room_id) filter.room_id = normalizeRoomId(room_id);
+    return this.connected.then(db => db.collection('whispers').deleteMany(filter));
+};
+
+
+// Mark a whisper as shared to the group. Only the owner can mark it.
+Database.prototype.markWhisperShared = function(id, username) {
+    if (!ObjectId.isValid(id) || typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid whisper id or username'));
+    }
+    return this.connected.then(db =>
+        db.collection('whispers').updateOne(
+            { _id: new ObjectId(id), username },
+            { $set: { shared_at: Date.now() } }
+        )
+    );
+};
+
+Database.prototype.getUserSettings = function(username) {
+    if (typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid username: must be a string'));
+    }
+    return this.connected.then(db =>
+        db.collection('users')
+            .findOne({ username: username.trim().toLowerCase() }, { projection: { settings: 1 } })
+            .then(user => ({ ...DEFAULT_USER_SETTINGS, ...(user?.settings || {}) }))
+    );
+};
+
+Database.prototype.updateUserSettings = function(username, settings) {
+    if (typeof username !== 'string') {
+        return Promise.reject(new Error('Invalid username: must be a string'));
+    }
+    const $set = {};
+    if (settings?.whisperMemory !== undefined) {
+        if (!WHISPER_MEMORY_MODES.includes(settings.whisperMemory)) {
+            return Promise.reject(new Error('Invalid whisperMemory value'));
+        }
+        $set['settings.whisperMemory'] = settings.whisperMemory;
+    }
+    if (Object.keys($set).length === 0) {
+        return Promise.reject(new Error('No settings provided'));
+    }
+    return this.connected.then(db =>
+        db.collection('users').updateOne({ username: username.trim().toLowerCase() }, { $set })
+    );
+};
+
 export default Database;

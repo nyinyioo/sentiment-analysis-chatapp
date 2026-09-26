@@ -358,3 +358,96 @@ describe('Database.deleteRoom', () => {
     expect(fetched).toBeNull();
   });
 });
+
+// ---------------------------------------------------------------------------
+// Whispers + user settings
+// ---------------------------------------------------------------------------
+describe('whispers', () => {
+  const roomA = new ObjectId();
+  const roomB = new ObjectId();
+
+  beforeEach(async () => {
+    const conn = await db.connected;
+    await conn.collection('whispers').deleteMany({});
+  });
+
+  test('addWhisper stores the doc and returns it with defaults', async () => {
+    const w = await db.addWhisper({ room_id: String(roomA), username: 'nyi', query: 'vibe?', reply: 'chill', text: 'hey chat, vibe?' });
+    expect(w._id).toBeInstanceOf(ObjectId);
+    expect(w.room_id).toEqual(roomA);          // normalised to ObjectId
+    expect(w.username).toBe('nyi');
+    expect(w.query).toBe('vibe?');
+    expect(w.reply).toBe('chill');
+    expect(w.text).toBe('hey chat, vibe?');
+    expect(w.shared_at).toBeNull();
+    expect(typeof w.ts).toBe('number');
+  });
+
+  test('addWhisper rejects invalid input', async () => {
+    await expect(db.addWhisper({ room_id: String(roomA), username: 'nyi', query: 'q' })).rejects.toThrow(/Invalid whisper/);
+    await expect(db.addWhisper({ username: 'nyi', query: 'q', reply: 'r' })).rejects.toThrow(/Invalid whisper/);
+  });
+
+  test('getWhispers is scoped to user + room, oldest first, last N', async () => {
+    for (let i = 0; i < 5; i++) {
+      await db.addWhisper({ room_id: roomA, username: 'nyi', query: `q${i}`, reply: `r${i}`, ts: 1000 + i });
+    }
+    await db.addWhisper({ room_id: roomA, username: 'sam', query: 'secret', reply: 'x', ts: 1002 });
+    await db.addWhisper({ room_id: roomB, username: 'nyi', query: 'other room', reply: 'x', ts: 1003 });
+
+    const all = await db.getWhispers(String(roomA), 'nyi');
+    expect(all.map(w => w.query)).toEqual(['q0', 'q1', 'q2', 'q3', 'q4']);
+
+    const last2 = await db.getWhispers(String(roomA), 'nyi', 2);
+    expect(last2.map(w => w.query)).toEqual(['q3', 'q4']);
+
+    expect(await db.getWhispers(String(roomA), 'nobody')).toEqual([]);
+  });
+
+  test('deleteWhispers by room or everywhere, only for that user', async () => {
+    await db.addWhisper({ room_id: roomA, username: 'nyi', query: 'a', reply: 'x' });
+    await db.addWhisper({ room_id: roomB, username: 'nyi', query: 'b', reply: 'x' });
+    await db.addWhisper({ room_id: roomA, username: 'sam', query: 'c', reply: 'x' });
+
+    expect((await db.deleteWhispers('nyi', String(roomA))).deletedCount).toBe(1);
+    expect((await db.getWhispers(roomB, 'nyi')).length).toBe(1);
+    expect((await db.deleteWhispers('nyi')).deletedCount).toBe(1);
+    expect((await db.getWhispers(roomA, 'sam')).length).toBe(1);
+  });
+
+  test('markWhisperShared only works for the owner', async () => {
+    const w = await db.addWhisper({ room_id: roomA, username: 'nyi', query: 'a', reply: 'x' });
+    expect((await db.markWhisperShared(String(w._id), 'sam')).matchedCount).toBe(0);
+    expect((await db.markWhisperShared(String(w._id), 'nyi')).matchedCount).toBe(1);
+    const [after] = await db.getWhispers(roomA, 'nyi');
+    expect(typeof after.shared_at).toBe('number');
+    await expect(db.markWhisperShared('not-an-id', 'nyi')).rejects.toThrow(/Invalid/);
+  });
+});
+
+describe('user settings', () => {
+  beforeEach(async () => {
+    const conn = await db.connected;
+    await conn.collection('users').deleteMany({ username: { $in: ['settings-user'] } });
+    await conn.collection('users').insertOne({ username: 'settings-user', password: 'hash' });
+  });
+
+  test('defaults to session when the user has no settings', async () => {
+    expect(await db.getUserSettings('settings-user')).toEqual({ whisperMemory: 'session' });
+    expect(await db.getUserSettings('ghost')).toEqual({ whisperMemory: 'session' });
+  });
+
+  test('updateUserSettings persists whisperMemory and is case-insensitive on username', async () => {
+    await db.updateUserSettings('Settings-User', { whisperMemory: 'remember' });
+    expect(await db.getUserSettings('settings-user')).toEqual({ whisperMemory: 'remember' });
+    await db.updateUserSettings('settings-user', { whisperMemory: 'session' });
+    expect(await db.getUserSettings('settings-user')).toEqual({ whisperMemory: 'session' });
+  });
+
+  test('rejects invalid modes and empty updates', async () => {
+    await expect(db.updateUserSettings('settings-user', { whisperMemory: 'forever' })).rejects.toThrow(/Invalid whisperMemory/);
+    await expect(db.updateUserSettings('settings-user', { whisperMemory: 'incognito' })).rejects.toThrow(/Invalid whisperMemory/);
+    await expect(db.updateUserSettings('settings-user', {})).rejects.toThrow(/No settings/);
+    await expect(db.getUserSettings(42)).rejects.toThrow(/Invalid username/);
+  });
+});
