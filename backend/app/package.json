@@ -25,6 +25,8 @@
     "dev": "nodemon server.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
-    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "seed:demo": "node scripts/seed-demo-chat.js",
+    "ask": "node scripts/ask-chat.js"
   }
 }
