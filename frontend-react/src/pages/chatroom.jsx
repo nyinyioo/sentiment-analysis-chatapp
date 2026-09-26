@@ -21,6 +21,25 @@ import '../styles/chatroom.css'
 
 const SCROLL_THRESHOLD = 80
 
+// determines the sender of a message
+// falls back to the logged in user if no username
+function senderOf(msg, me) {
+  return msg.isBot ? (msg.username || 'bot') : (msg.username || me)
+}
+
+// check if message is sent by the logged in user
+function isMine(msg, me) {
+  return !msg.isBot && senderOf(msg, me) === me
+}
+
+// bot greeting shown at the top of every room
+const GREETING = {
+  username: 'bot',
+  text: 'How are you doing today?',
+  isBot: true,
+  sentiment: { label: 'LABEL_2', score: 0.8 },
+}
+
 function ChatroomPage() {
 
   // read roomId from /chat/:roomId
@@ -35,16 +54,9 @@ function ChatroomPage() {
 
   // chat room state
   // initialize with bot message
-  const [messages, setMessages] = useState(
-    [{
-      username: 'bot',
-      text: 'How are you doing today?',
-      isBot: true,
-      sentiment: { label: 'LABEL_2', score: 0.8 }
-    }]
-  )
+  const [messages, setMessages] = useState([GREETING])
   const [inputText, setInputText] = useState('')
-  const [roomName, setRoomName] = useState('')
+  const [roomName, setRoomName] = useState(isDemo ? 'Demo Chat' : '')
 
   // menu and legend state
   const [menuOpen, setMenuOpen] = useState(false)
@@ -59,16 +71,13 @@ function ChatroomPage() {
 
   // loads the room name
   useEffect(() => {
-    if (isDemo) {
-      setRoomName('Demo Chat')
-    } else {
-      getRooms()
-        .then(rooms => {
-          const room = rooms.find(r => String(r._id) === roomId)
-          if (room) setRoomName(room.name)
-        })
-        .catch(() => setRoomName(roomId))
-    }
+    if (isDemo) return
+    getRooms()
+      .then(rooms => {
+        const room = rooms.find(r => String(r._id) === roomId)
+        if (room) setRoomName(room.name)
+      })
+      .catch(() => setRoomName(roomId))
   }, [roomId, isDemo])
 
 
@@ -78,16 +87,20 @@ function ChatroomPage() {
    * app rooms: persistant memory
    */
   useEffect(() => {
-    if (!isDemo) {
-      getMessages(roomId)
-        .then(conversation => {
-          if (conversation?.messages) {
-            // append history after the greeting instead of replacing it
-            setMessages(prev => [...prev, ...conversation.messages])
-          }
-        })
-        .catch(err => console.error('[Chatroom] Failed to load history:', err))
-    }
+    if (isDemo) return
+
+    // React StrictMode runs effects twice in dev. `cancelled` drops the
+    // stale first result, and we REPLACE the list (greeting + history)
+    // rather than append, so history can never be shown twice.
+    let cancelled = false
+    getMessages(roomId)
+      .then(conversation => {
+        if (cancelled || !conversation?.messages) return
+        setMessages([GREETING, ...conversation.messages])
+      })
+      .catch(err => console.error('[Chatroom] Failed to load history:', err))
+
+    return () => { cancelled = true }
   }, [roomId, isDemo])
 
 
@@ -149,22 +162,11 @@ function ChatroomPage() {
     }
   }
 
-  // determines the sender of a message
-  // falls back to the logged in user if no username
-  function senderOf(msg) {
-    return msg.isBot ? (msg.username || 'bot') : (msg.username || username)
-  }
-
-  // check if message is sent by the logged in user
-  function isMine(msg) {
-    return !msg.isBot && senderOf(msg) === username
-  }
-
   // get the list of participants in the chat room
   const participants = useMemo(() => {
     const others = []
     for (const msg of messages) {
-      const name = senderOf(msg)
+      const name = senderOf(msg, username)
       if (name !== username && !others.includes(name)) others.push(name)
     }
     return [...others, 'You'].join(', ')
@@ -251,8 +253,8 @@ function ChatroomPage() {
       <div className="message-list-wrapper">
         <div className="message-list" ref={messageListRef} onScroll={handleScroll}>
           {messages.map((msg, index) => {
-            const mine = isMine(msg)
-            const sender = senderOf(msg)
+            const mine = isMine(msg, username)
+            const sender = senderOf(msg, username)
             const emotion = getEmotion(msg.sentiment, msg.text)
 
             return (
