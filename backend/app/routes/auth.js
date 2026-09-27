@@ -98,8 +98,8 @@ export default function(db, sessionManager, hashPassword, isCorrectPassword, wss
 
             const botGreeting = {
                 roomId,
-                text: `Hi ${anonymousUsername}! I'm your chat assistant. Say anything to get started!`,
-                username: 'bot',
+                text: `Hi ${anonymousUsername}! I'm chat. Say anything to get started, or ask me privately with "hey chat, ...".`,
+                username: 'chat',
                 isBot: true,
                 sentiment: { label: 'POSITIVE', score: 0 },
             };
@@ -124,6 +124,28 @@ export default function(db, sessionManager, hashPassword, isCorrectPassword, wss
 
     router.get('/profile', sessionManager.middleware, (req, res) => {
         res.json({ username: req.username });
+    });
+
+    // per-user settings (assistant memory mode)
+    router.get('/settings', sessionManager.middleware, async (req, res) => {
+        try {
+            res.json(await db.getUserSettings(req.username));
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+
+    router.put('/settings', sessionManager.middleware, async (req, res) => {
+        if (req.username.startsWith('guest_')) {
+            return res.status(403).json({ error: 'Demo users have no saved settings' });
+        }
+        try {
+            await db.updateUserSettings(req.username, req.body || {});
+            res.json(await db.getUserSettings(req.username));
+        } catch (error) {
+            res.status(400).json({ error: error.message || 'Invalid settings' });
+        }
     });
 
     router.put('/profile', sessionManager.middleware, async (req, res) => {

@@ -19,7 +19,7 @@ print("[Sentiment] Loading model...")
 sentiment_analyzer = pipeline(
     "sentiment-analysis",
     model="cardiffnlp/twitter-roberta-base-sentiment",
-    device=-1,  # -1 = CPU; change to 0 for first GPU
+    device=0,  # -1 = CPU; change to 0 for first GPU
 )
 print("[Sentiment] Model ready.")
 
